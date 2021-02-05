@@ -1,8 +1,11 @@
 #/usr/bin/python3
-
-import argparse
-import pandas as pd
-import numpy as np
+try:
+    import argparse
+    import pandas as pd
+    import numpy as np
+except:
+    print('[Import error] Please run <pip install --user pandas>')
+    exit()
 
 def parse_arg():
     parser = argparse.ArgumentParser(prog='describe', usage='%(prog)s [-h] datafile.csv', description='Program describing the dataset given.')
@@ -45,7 +48,7 @@ def read_csv(datafile):
         features = np.array(features).T
         return X, y, features
     except:
-        raise NameError('Read error: Wrong file format. Make sure you give an existing .csv file as argument.')
+        raise NameError('[Read error] Wrong file format. Make sure you give an existing .csv file as argument.')
 
 def calc_count(X):
     count = 0
@@ -66,12 +69,11 @@ def calc_mean(X):
 
 def calc_std(X, mean):
     total = len(X)
-    std = 1
     sum_squares = 0
     for i in range(total):
         if X[i] == X[i]:
             sum_squares += (X[i] - mean) ** 2
-    std = sum_squares / total
+    std = sum_squares / (total - 1)
     std = std ** 0.5
     return std
 
@@ -102,12 +104,11 @@ def describe(features, X):
         std = calc_std(x, mean)
         min = calc_min(x)
         max = calc_max(x)
-        print("count :", count)
-        print("mean  :", mean)
-        print("std   :", std)
-        print("min   :", min)
-        print("max   :", max)
-        print()
+        print("count : {:.6f}".format(count))
+        print("mean  : {:.6f}".format(mean))
+        print("std   : {:.6f}".format(std))
+        print("min   : {:.6f}".format(min))
+        print("max   : {:.6f}\n".format(max))
         i +=1
 
 def main():
