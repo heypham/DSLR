@@ -71,10 +71,11 @@ def display(features):
     i = 0
     information = ['name', 'count', 'mean', 'std', 'min', 'q_25', 'q_50', 'q_75', 'max']
     for info in information:
-        data = []
+        to_print = '{:<7s}'.format(info)
         for feature in features:
-            data.append(feature.get(info))
-        print('{:15s} {:15s} {:15s} {:15s} {:15s} {:15s} {:15s}'.format(information[i], data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7]))
+            to_print += feature.get(info)
+        print(to_print)
+        # print('{:15s} {:15s} {:15s} {:15s} {:15s} {:15s} {:15s}'.format(information[i], data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7]))
         i += 1
 
 def main():

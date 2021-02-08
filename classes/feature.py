@@ -30,22 +30,30 @@ class Feature:
         result_max = (dataset[int(position_max)] * position_max_coef)
         return result_min + result_max
     
+    def return_info(self, info_to_return):
+        info_to_return_formatted = '{:>.6f}'.format(info_to_return)
+        info = '|'
+        info += ' ' * (len(self.name) - len(info_to_return_formatted) + 5)
+        info += info_to_return_formatted
+        return info
+
     def get(self, info):
         if info == 'name':
-            return str(self.name)
+            info = '|  {:>13s}'.format(self.name)
+            return info
         if info == 'count':
-            return str('{:.6f}'.format(self.count))
+            return self.return_info(self.count)
         if info == 'mean':
-            return str('{:.6f}'.format(self.mean))
+            return self.return_info(self.mean)
         if info == 'std':
-            return str('{:.6f}'.format(self.std))
+            return self.return_info(self.std)
         if info == 'min':
-            return str('{:.6f}'.format(self.min))
+            return self.return_info(self.min)
         if info == 'q_25':
-            return str('{:.6f}'.format(self.q_25))
+            return self.return_info(self.q_25)
         if info == 'q_50':
-            return str('{:.6f}'.format(self.q_50))
+            return self.return_info(self.q_50)
         if info == 'q_75':
-            return str('{:.6f}'.format(self.q_75))
+            return self.return_info(self.q_75)
         if info == 'max':
-            return str('{:.6f}'.format(self.max))
+            return self.return_info(self.max)
