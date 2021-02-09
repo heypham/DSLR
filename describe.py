@@ -10,7 +10,7 @@ except:
 
 def parse_arg():
     parser = argparse.ArgumentParser(prog='describe', usage='%(prog)s [-h] datafile.csv', description='Program describing the dataset given.')
-    parser.add_argument("datafile", help="the .csv file containing the dataset")
+    parser.add_argument('datafile', help='the .csv file containing the dataset')
     args = parser.parse_args()
     return args
 
@@ -23,18 +23,19 @@ def read_csv(datafile):
 
         for key, value in f.iteritems(): 
             # Append features to X matrix
-            if key == "Index" or key == "First Name" or key == "Last Name" or key == "Birthday":
+            if key == 'Index' or key == 'First Name' or key == 'Last Name' or key == 'Birthday':
+            # if key == 'Index' or key == 'First Name' or key == 'Last Name' or key == 'Birthday' or key == 'Best Hand':
                 pass
-            elif key == "Hogwarts House":
+            elif key == 'Hogwarts House':
                 y.append(value)
             else:
                 features.append(key)
                 # Change L/R hand to 0/1 values to add them as feature
-                if key == "Best Hand":
+                if key == 'Best Hand':
                     i = 0
                     val = []
                     for v in value:
-                        if v == "Left":
+                        if v == 'Left':
                             val.append(0)
                         else:
                             val.append(1)
@@ -89,11 +90,11 @@ def main():
         display(features)
 
         # Real describe function as reference
-        f = pd.read_csv(args.datafile)
-        sum = f.describe()
-        print(sum)
+        # f = pd.read_csv(args.datafile)
+        # sum = f.describe()
+        # print(sum)
     except NameError as e:
         print(e)
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
