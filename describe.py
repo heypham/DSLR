@@ -70,13 +70,16 @@ def describe(features_names, X):
 def display(features):
     i = 0
     information = ['name', 'count', 'mean', 'std', 'min', 'q_25', 'q_50', 'q_75', 'max']
+    print
     for info in information:
         to_print = '{:<7s}'.format(info)
+        if info == 'name':
+            to_print = ' ' * 7
         for feature in features:
             to_print += feature.get(info)
         print(to_print)
-        # print('{:15s} {:15s} {:15s} {:15s} {:15s} {:15s} {:15s}'.format(information[i], data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7]))
         i += 1
+    print
 
 def main():
     try:
