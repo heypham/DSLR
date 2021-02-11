@@ -91,7 +91,7 @@ def calc_std(data, mean, count):
 def find_most_homogeneus_feature(X, y):
     i = 0
     final_i = 0
-    std_min = 9236582376
+    std_min = float('inf')
     for x in X:
         data = remove_empty_values(x)
         count = len(data)

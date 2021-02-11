@@ -30,7 +30,7 @@ class Feature:
         result_max = (dataset[int(position_max)] * position_max_coef)
         return result_min + result_max
     
-    def return_info(self, info_to_return):
+    def __return_info(self, info_to_return):
         info_to_return_formatted = ' {:>13.6f} '.format(info_to_return)
         magic_number_of_spaces = len(self.name) - 13 if len(self.name) > 13 else 0
         info = '|'
@@ -44,18 +44,18 @@ class Feature:
             info = '| {:>13s} |'.format(self.name)
             return info
         if info == 'count':
-            return self.return_info(self.count)
+            return self.__return_info(self.count)
         if info == 'mean':
-            return self.return_info(self.mean)
+            return self.__return_info(self.mean)
         if info == 'std':
-            return self.return_info(self.std)
+            return self.__return_info(self.std)
         if info == 'min':
-            return self.return_info(self.min)
+            return self.__return_info(self.min)
         if info == 'q_25':
-            return self.return_info(self.q_25)
+            return self.__return_info(self.q_25)
         if info == 'q_50':
-            return self.return_info(self.q_50)
+            return self.__return_info(self.q_50)
         if info == 'q_75':
-            return self.return_info(self.q_75)
+            return self.__return_info(self.q_75)
         if info == 'max':
-            return self.return_info(self.max)
+            return self.__return_info(self.max)
