@@ -30,19 +30,7 @@ def read_csv(datafile):
                 y.append(value)
             else:
                 features.append(key)
-                # Change L/R hand to 0/1 values to add them as feature
-                if key == 'Best Hand':
-                    i = 0
-                    val = []
-                    for v in value:
-                        if v == 'Left':
-                            val.append(0)
-                        else:
-                            val.append(1)
-                        i +=1
-                    X.append(val)
-                else:
-                    X.append(value)
+                X.append(value)
 
         # Transform arrays as numpy arrays for calculations
         X = np.array(X)
