@@ -58,9 +58,10 @@ def filter_data(X1, X2, y):
 def clasify_data_per_house(data, house):
     try:
         i = 0
+        count = len(data[0])
         x1_per_house = []
         x2_per_house = []
-        for i in range(len(data[0])):
+        for i in range(count):
             if data[2][i] == house:
                 x1_per_house.append(data[0][i])
                 x2_per_house.append(data[1][i])
@@ -69,56 +70,70 @@ def clasify_data_per_house(data, house):
     except:
         return [[], []]
 
-def calc_cov(X_1, X_2, y):
-    cov = 0
-    data = filter_data(X_1, X_2, y)
-    X1 = data[0]
-    X2 = data[1]
-    mean_x1 = sum(X1) / len(X1)
-    mean_x2 = sum(X2) / len(X2)
-    for i in range(len(X1)):
-        cov += (X1[i] - mean_x1) * (X2[i] - mean_x2)
-        i += 1
-    cov /= (len(X1) - 1)
-    print(cov)
-    return cov
+def calc_std(X):
+    try:
+        count = len(X)
+        mean = sum(X) / count
+        sum_squares = 0
+        for i in range(count):
+            sum_squares += (X[i] - mean) ** 2
+        std = sum_squares / (count - 1)
+        std = std ** 0.5
+        return std
+    except:
+        return 0
+
+def calc_pearson_coef(X_1, X_2, y):
+    try:
+        pearson_coef = 0
+        [X1, X2, y] = filter_data(X_1, X_2, y)
+        count = len(X1)
+        mean_X1 = sum(X1) / count
+        mean_X2 = sum(X2) / count
+        for i in range(count):
+            pearson_coef += ((X1[i] - mean_X1) * (X2[i] - mean_X2)) / (count - 1)
+            i += 1
+        pearson_coef /= (calc_std(X1) * calc_std(X2))
+        return abs(pearson_coef)
+    except:
+        return 0
 
 def find_most_correlated_features(X, y):
-    i = 0
-    j = 1
-    final_i = 0
-    final_j = 0
-    final_cov = 0
-    for i in range(13):
-        for j in range(i + 1, 13):
-            cov = abs(calc_cov(X[i], X[j], y))
-            if final_cov < cov:
-                final_i = i
-                final_j = j
-                final_cov = cov
-            print('i: {} || j: {}'.format(i, j))
-            j += 1
-        i += 1
-    print(final_i)
-    print(final_j)
-    return [final_i, final_j]
+    try:
+        feature_1 = 0
+        feature_2 = 1
+        final_feature_1 = 0
+        final_feature_2 = 0
+        final_pearson_coef = 0
+        for feature_1 in range(13):
+            for feature_2 in range(feature_1 + 1, 13):
+                pearson_coef = calc_pearson_coef(X[feature_1], X[feature_2], y)
+                if final_pearson_coef < pearson_coef:
+                    final_feature_1 = feature_1
+                    final_feature_2 = feature_2
+                    final_pearson_coef = pearson_coef
+                feature_2 += 1
+            feature_1 += 1
+        return final_feature_1, final_feature_2, final_pearson_coef
+    except:
+        return 0, 0, 'error'
 
 def main():
     try:
         args = parse_arg()
         X, y, features_names = read_csv(args.datafile)
-        features_to_plot = find_most_correlated_features(X, y[0])
-        print(features_names[features_to_plot[0]])
-        print(features_names[features_to_plot[1]])
-        data = filter_data(X[features_to_plot[0]], X[features_to_plot[1]], y[0])
-        # name = features_names[feature_to_plot]
+        feature_to_plot_1, feature_to_plot_2, pearson_coef = find_most_correlated_features(X, y[0])
+        data = filter_data(X[feature_to_plot_1], X[feature_to_plot_2], y[0])
         houses = ['Gryffindor', 'Slytherin', 'Hufflepuff', 'Ravenclaw']
+        plt.suptitle('Scatter plot')
+        plt.title('Pearson\'s Coef: {:.3f}'.format(pearson_coef))
         for house in houses:
-            data_per_house = clasify_data_per_house(data, house)
-            plt.scatter(data_per_house[0], data_per_house[1], alpha=0.2, label=house)
+            [X1, X2] = clasify_data_per_house(data, house)
+            plt.scatter(X1, X2, alpha=0.2, label=house)
+        plt.xlabel(features_names[feature_to_plot_1])
+        plt.ylabel(features_names[feature_to_plot_2])
         plt.legend()
         plt.show()
-        exit()
     except NameError as e:
         print(e)
 
