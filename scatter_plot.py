@@ -1,5 +1,6 @@
 #/usr/bin/python3
 try:
+    from classes.logisticregression import LogisticRegression
     import argparse
     import pandas as pd
     import numpy as np
@@ -32,6 +33,9 @@ def read_csv(datafile):
         # Transform arrays as numpy arrays for calculations
         X = np.array(X)
         y = np.array(y)
+        print(X[0])
+        print(X.shape)
+        print(y.shape)
         features = np.array(features).T
         return X, y, features
     except:
@@ -120,8 +124,9 @@ def find_most_correlated_features(X, y):
 
 def main():
     try:
-        args = parse_arg()
-        X, y, features_names = read_csv(args.datafile)
+        model = LogisticRegression()
+        args = model.parse_arg()
+        X, y, features_names = model.read_csv(args.datafile)
         feature_to_plot_1, feature_to_plot_2, pearson_coef = find_most_correlated_features(X, y[0])
         data = filter_data(X[feature_to_plot_1], X[feature_to_plot_2], y[0])
         houses = ['Gryffindor', 'Slytherin', 'Hufflepuff', 'Ravenclaw']

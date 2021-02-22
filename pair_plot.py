@@ -1,18 +1,12 @@
 #/usr/bin/python3
 try:
-    import argparse
+    from classes.logisticregression import LogisticRegression
     import pandas as pd
     import numpy as np
     import matplotlib.pyplot as plt
 except:
     print('[Import error] Please run <pip install -r requirements.txt>')
     exit()
-
-def parse_arg():
-    parser = argparse.ArgumentParser(prog='describe', usage='%(prog)s [-h] datafile.csv', description='Program describing the dataset given.')
-    parser.add_argument('datafile', help='the .csv file containing the dataset')
-    args = parser.parse_args()
-    return args
 
 def read_csv(datafile):
     try:
@@ -33,6 +27,9 @@ def read_csv(datafile):
         X = np.array(X)
         y = np.array(y)
         features = np.array(features).T
+        print(X)
+        print(y)
+        # print(features.shape)
         return X, y, features
     except:
         raise NameError('[Read error] Wrong file format. Make sure you give an existing .csv file as argument.')
@@ -90,8 +87,9 @@ def format_axis(axs, feature_1, feature_2):
 
 def main():
     try:
-        args = parse_arg()
-        X, y, features_names = read_csv(args.datafile)
+        model = LogisticRegression()
+        args = model.parse_arg()
+        X, y, features_names = model.read_csv(args.datafile)
         nb_features = 13
         houses = ['Gryffindor', 'Slytherin', 'Hufflepuff', 'Ravenclaw']
         fig, axs = plt.subplots(nb_features, nb_features)

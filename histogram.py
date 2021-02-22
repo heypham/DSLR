@@ -1,44 +1,11 @@
 #/usr/bin/python3
 #/usr/bin/python3
 try:
-    import argparse
-    import pandas as pd
-    import numpy as np
+    from classes.logisticregression import LogisticRegression
     import matplotlib.pyplot as plt
 except:
     print('[Import error] Please run <pip install -r requirements.txt>')
     exit()
-
-def parse_arg():
-    parser = argparse.ArgumentParser(prog='describe', usage='%(prog)s [-h] datafile.csv', description='Program describing the dataset given.')
-    parser.add_argument('datafile', help='the .csv file containing the dataset')
-    args = parser.parse_args()
-    return args
-
-def read_csv(datafile):
-    try:
-        f = pd.read_csv(datafile)
-        features = []
-        X = []
-        y = []
-
-        for key, value in f.iteritems(): 
-            # Append features to X matrix
-            if key == 'Index' or key == 'First Name' or key == 'Last Name' or key == 'Birthday' or key == 'Best Hand':
-                pass
-            elif key == 'Hogwarts House':
-                y.append(value)
-            else:
-                features.append(key)
-                X.append(value)
-
-        # Transform arrays as numpy arrays for calculations
-        X = np.array(X)
-        y = np.array(y)
-        features = np.array(features).T
-        return X, y, features
-    except:
-        raise NameError('[Read error] Wrong file format. Make sure you give an existing .csv file as argument.')
 
 def clasify_data_per_house(X, y):
     i = 0
@@ -93,8 +60,9 @@ def find_most_homogeneus_feature(X, y):
 
 def main():
     try:
-        args = parse_arg()
-        X, y, features_names = read_csv(args.datafile)
+        model = LogisticRegression()
+        args = model.parse_arg()
+        X, y, features_names = model.read_csv(args.datafile)
         feature_to_plot = find_most_homogeneus_feature(X, y)
         data = clasify_data_per_house(X[feature_to_plot], y[0])
         name = features_names[feature_to_plot]
