@@ -7,22 +7,6 @@ except NameError as e:
     print('[Import error] Please run <pip install -r requirements.txt>')
     exit()
 
-def remove_empty_values(X):
-    x_filtered = []
-    for x in X:
-        if x == x:
-            x_filtered.append(x)
-    return x_filtered
-
-def describe(features_names, X):
-    i = 0
-    features = []
-    for x in X:
-        feature = Feature(features_names[i], remove_empty_values(x))
-        features.append(feature)
-        i +=1
-    return features
-
 def display(features):
     i = 0
     information = ['name', 'count', 'mean', 'std', 'min', 'q_25', 'q_50', 'q_75', 'max']
@@ -42,7 +26,7 @@ def main():
         model = LogisticRegression()
         args = model.parse_arg()
         X, y, features_names = model.read_csv(args.datafile)
-        features = describe(features_names, X)
+        features = model.describe(features_names, X)
         display(features)
 
         # Real describe function as reference

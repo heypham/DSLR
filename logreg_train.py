@@ -9,18 +9,6 @@ except NameError as e:
     print(e)
     print('[Import error] Please run <pip install -r requirements.txt>')
     exit()
-    
-    # def feature_scale_normalise(self, X):
-    #     """
-    #     Normalises & Standardise feature vector X so that
-    #     mean    Xnorm = 0
-    #     stdev   Xnorm = 1
-    #     """
-    #     self.mean = X.mean()
-    #     self.stdev = X.std()
-    #     Xnorm = (X - self.mean) / self.stdev
-    #     print("mean : ", self.mean, "std : ", self.stdev)
-    #     return Xnorm
 
 #     def cost(self, X, y, theta):
 #         """
@@ -83,9 +71,8 @@ def main():
         model = LogisticRegression()
         args = model.parse_arg()
         X, y, features = model.read_csv(args.datafile)
-        X_train, X_test, y_train, y_test = model.split_data(X, y)
-        X_norm = model.feature_scale_normalise(X_train)
-        # print(X_norm)
+        X_norm = model.feature_scale_normalise(X)
+        X_train, X_test, y_train, y_test = model.split_data(X_norm, y)
 
     except NameError as e:
         print(e)
