@@ -17,7 +17,7 @@ class LogisticRegression(object):
         self.features = []
         self.mean = []
         self.stdev = []
-        self.theta = np.zeros(14) # Need to change number of theta values to number of features + 1 (for bias)
+        self.theta = np.zeros(14).reshape(-1,1) # Need to change number of theta values to number of features + 1 (for bias)
 
     def parse_arg(self):
         parser = argparse.ArgumentParser(prog='describe', usage='%(prog)s [-h] datafile.csv', description='Program describing the dataset given.')
@@ -32,7 +32,8 @@ class LogisticRegression(object):
         """
         try:
             f = pd.read_csv(datafile)
-            # houses = f['Hogwarts House'].unique()
+            houses = f['Hogwarts House'].unique()
+            # print(houses)
             features = list(f.columns[6:])
             y = f['Hogwarts House']
             X = f.drop(['Index','Hogwarts House', 'First Name', 'Last Name', 'Birthday', 'Best Hand'],axis=1)
@@ -84,17 +85,59 @@ class LogisticRegression(object):
             self.stdev.append(features_describe[i].std)
             Xnorm.append((X[i] - self.mean[i]) / self.stdev[i])
         Xnorm = np.array(Xnorm)
+        Xnorm = Xnorm.T
+        Xnorm = np.insert(Xnorm, 0, 1, axis=1)
         return Xnorm
 
-    def hypothesis(self, X, theta):
+    def one_hot_encoding(self, y):
         """
-        hθ(x) = g(θT * x)
-        where
-        g(z) = 1 / (1 + e^(−z))
+        Changes each y into 1x4 matrix
+        Ravenclaw =  [ 1 0 0 0 ]
+        Slytherin =  [ 0 1 0 0 ]
+        Gryffindor = [ 0 0 1 0 ]
+        Hufflepuff = [ 0 0 0 1 ]
         """
-        ret = X * theta[1] + theta[0]
-        # print("hypothesis ret : ", ret)
+        y_encoded = []
+        count = 0
+        for y_i in y:
+            if y_i == "Ravenclaw":
+                y_encoded.append([1, 0, 0, 0])
+            elif y_i == "Slytherin":
+                y_encoded.append([0, 1, 0, 0])
+            elif y_i == "Gryffindor":
+                y_encoded.append([0, 0, 1, 0])
+            elif y_i == "Hufflepuff":
+                y_encoded.append([0, 0, 0, 1])
+        y_encoded = np.array(y_encoded)
+        return y_encoded
+
+    def pre_activation(self, X, theta):
+        """
+        Dot product of weights (θ vector) and features (X)
+        will be used in activation (sigmoid)
+        """
+        ret = np.dot(X, theta)
         return ret
+
+    def activation(self, z):
+        """
+        The activated function is used in the hypothesis.
+        Here we use sigmoid function
+        """
+        return 1 / (1 + np.exp(-z))
+
+    def hypothesis(self, features, weights):
+        """
+            Predict the class
+            **input: **
+                *features: (Numpy Matrix)
+                *weights: (Numpy vector)
+            **reutrn: (Numpy vector)**
+                *0 or 1
+        """
+        z = self.pre_activation(features, weights)
+        y = self.activation(z)
+        return np.round(y)
 
     def cost(self, X, y, theta):
         """
@@ -102,7 +145,7 @@ class LogisticRegression(object):
         the higher the cost, the more inaccurate the theta values are
         """
         m = X.shape[0]
-        prediction = self.hypothesis(X, theta)
+        prediction = self.activation(X, theta)
         cost = (1/(2*m) * np.sum(np.square(prediction - y)))
         return cost
 
@@ -113,8 +156,8 @@ class LogisticRegression(object):
         X = self.feature_scale_normalise(X)
         m = X.shape[0]
         cost = []
-        for i in range(iter):
-            loss = self.hypothesis(X, self.theta) - y
+        for _ in range(iter):
+            loss = self.activation(X, self.theta) - y
             self.theta[0] -= (alpha / m) * np.sum(loss)
             self.theta[1] -= (alpha / m) * np.sum(loss * X)
             cost.append(self.cost(X, y, self.theta))
