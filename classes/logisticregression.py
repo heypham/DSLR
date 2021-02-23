@@ -17,7 +17,7 @@ class LogisticRegression(object):
         self.features = []
         self.mean = []
         self.stdev = []
-        self.theta = np.zeros(2) # Need to change number of theta values to number of features + 1
+        self.theta = np.zeros(14) # Need to change number of theta values to number of features + 1 (for bias)
 
     def parse_arg(self):
         parser = argparse.ArgumentParser(prog='describe', usage='%(prog)s [-h] datafile.csv', description='Program describing the dataset given.')
@@ -85,3 +85,38 @@ class LogisticRegression(object):
             Xnorm.append((X[i] - self.mean[i]) / self.stdev[i])
         Xnorm = np.array(Xnorm)
         return Xnorm
+
+    def hypothesis(self, X, theta):
+        """
+        hθ(x) = g(θT * x)
+        where
+        g(z) = 1 / (1 + e^(−z))
+        """
+        ret = X * theta[1] + theta[0]
+        # print("hypothesis ret : ", ret)
+        return ret
+
+    def cost(self, X, y, theta):
+        """
+        Calculates cost for given X and y
+        the higher the cost, the more inaccurate the theta values are
+        """
+        m = X.shape[0]
+        prediction = self.hypothesis(X, theta)
+        cost = (1/(2*m) * np.sum(np.square(prediction - y)))
+        return cost
+
+    def fit(self, X, y, alpha, iter):
+        """
+        Gradient descent algorithm to update theta values
+        """
+        X = self.feature_scale_normalise(X)
+        m = X.shape[0]
+        cost = []
+        for i in range(iter):
+            loss = self.hypothesis(X, self.theta) - y
+            self.theta[0] -= (alpha / m) * np.sum(loss)
+            self.theta[1] -= (alpha / m) * np.sum(loss * X)
+            cost.append(self.cost(X, y, self.theta))
+        print("theta : ", self.theta)
+        return self.theta
