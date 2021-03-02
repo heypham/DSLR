@@ -12,6 +12,13 @@ class LogisticRegression(object):
         """
         Class initializer
         """
+        self.houses = ['Gryffindor', 'Slytherin', 'Hufflepuff', 'Ravenclaw']
+        self.colors = {
+            'Gryffindor': 'red',
+            'Slytherin': 'green',
+            'Hufflepuff': 'yellow',
+            'Ravenclaw': 'blue'
+        }
         self.X = []
         self.y = []
         self.features = []
