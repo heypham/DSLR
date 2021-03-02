@@ -9,38 +9,6 @@ except:
     print('[Import error] Please run <pip install -r requirements.txt>')
     exit()
 
-def parse_arg():
-    parser = argparse.ArgumentParser(prog='describe', usage='%(prog)s [-h] datafile.csv', description='Program describing the dataset given.')
-    parser.add_argument('datafile', help='the .csv file containing the dataset')
-    args = parser.parse_args()
-    return args
-
-def read_csv(datafile):
-    try:
-        f = pd.read_csv(datafile)
-        features = []
-        X = []
-        y = []
-        for key, value in f.iteritems(): 
-            # Append features to X matrix
-            if key == 'Index' or key == 'First Name' or key == 'Last Name' or key == 'Birthday' or key == 'Best Hand':
-                pass
-            elif key == 'Hogwarts House':
-                y.append(value)
-            else:
-                features.append(key)
-                X.append(value)
-        # Transform arrays as numpy arrays for calculations
-        X = np.array(X)
-        y = np.array(y)
-        print(X[0])
-        print(X.shape)
-        print(y.shape)
-        features = np.array(features).T
-        return X, y, features
-    except:
-        raise NameError('[Read error] Wrong file format. Make sure you give an existing .csv file as argument.')
-
 def filter_data(X1, X2, y):
     try:
         i = 0
@@ -122,6 +90,17 @@ def find_most_correlated_features(X, y):
     except:
         return 0, 0, 'error'
 
+def plot_scatter_plot(houses, colors, data, pearson_coef, name_feature_1, name_feature_2):
+    plt.suptitle('Scatter plot')
+    plt.title('Pearson\'s Coef: {:.3f}'.format(pearson_coef))
+    for house in houses:
+        [X1, X2] = clasify_data_per_house(data, house)
+        plt.scatter(X1, X2, alpha=0.2, label=house, color=colors[house])
+    plt.xlabel(name_feature_1)
+    plt.ylabel(name_feature_2)
+    plt.legend()
+    plt.show()
+
 def main():
     try:
         model = LogisticRegression()
@@ -129,16 +108,7 @@ def main():
         X, y, features_names = model.read_csv(args.datafile)
         feature_to_plot_1, feature_to_plot_2, pearson_coef = find_most_correlated_features(X, y[0])
         data = filter_data(X[feature_to_plot_1], X[feature_to_plot_2], y[0])
-        houses = ['Gryffindor', 'Slytherin', 'Hufflepuff', 'Ravenclaw']
-        plt.suptitle('Scatter plot')
-        plt.title('Pearson\'s Coef: {:.3f}'.format(pearson_coef))
-        for house in houses:
-            [X1, X2] = clasify_data_per_house(data, house)
-            plt.scatter(X1, X2, alpha=0.2, label=house)
-        plt.xlabel(features_names[feature_to_plot_1])
-        plt.ylabel(features_names[feature_to_plot_2])
-        plt.legend()
-        plt.show()
+        plot_scatter_plot(model.houses, model.colors, data, pearson_coef, features_names[feature_to_plot_1], features_names[feature_to_plot_2])
     except NameError as e:
         print(e)
 
