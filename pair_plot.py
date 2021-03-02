@@ -8,32 +8,6 @@ except:
     print('[Import error] Please run <pip install -r requirements.txt>')
     exit()
 
-def read_csv(datafile):
-    try:
-        f = pd.read_csv(datafile)
-        features = []
-        X = []
-        y = []
-        for key, value in f.iteritems(): 
-            # Append features to X matrix
-            if key == 'Index' or key == 'First Name' or key == 'Last Name' or key == 'Birthday' or key == 'Best Hand':
-                pass
-            elif key == 'Hogwarts House':
-                y.append(value)
-            else:
-                features.append(key)
-                X.append(value)
-        # Transform arrays as numpy arrays for calculations
-        X = np.array(X)
-        y = np.array(y)
-        features = np.array(features).T
-        print(X)
-        print(y)
-        # print(features.shape)
-        return X, y, features
-    except:
-        raise NameError('[Read error] Wrong file format. Make sure you give an existing .csv file as argument.')
-
 def filter_data(X1, X2, y):
     try:
         i = 0
@@ -85,29 +59,33 @@ def format_axis(axs, feature_1, feature_2):
     axs[feature_2, feature_1].set_yticklabels([])
     return axs
 
+def plot_scatter_plot_or_histogram(axs, feature_1, feature_2, data, houses):
+    axs = format_axis(axs, feature_1, feature_2)
+    for house in houses:
+        [X1_per_house, X2_per_house] = clasify_data_per_house(data, house)
+        if feature_1 == feature_2:
+            axs[feature_1, feature_1].hist(X1_per_house, alpha=0.6)
+        else:
+            axs[feature_1, feature_2].scatter(X2_per_house, X1_per_house, alpha=0.07, marker='.')
+            axs[feature_2, feature_1].scatter(X1_per_house, X2_per_house, alpha=0.07, marker='.')
+
+def plot_plair_plot(X, y, features_names, nb_features, houses):
+    fig, axs = plt.subplots(nb_features, nb_features)
+    for feature_1 in range(nb_features):
+        name_feature_1 = get_title(features_names[feature_1])
+        axs[0, feature_1].set_title(name_feature_1)
+        plt.setp(axs[feature_1, 0], ylabel=name_feature_1)
+        for feature_2 in range(feature_1, nb_features):
+            plot_scatter_plot_or_histogram(axs, feature_1, feature_2, filter_data(X[feature_1], X[feature_2], y[0]), houses)
+    plt.suptitle('Pair plot')
+    plt.show()
+
 def main():
     try:
         model = LogisticRegression()
         args = model.parse_arg()
         X, y, features_names = model.read_csv(args.datafile)
-        nb_features = 13
-        houses = ['Gryffindor', 'Slytherin', 'Hufflepuff', 'Ravenclaw']
-        fig, axs = plt.subplots(nb_features, nb_features)
-        for feature_1 in range(nb_features):
-            axs[0, feature_1].set_title(get_title(features_names[feature_1]))
-            plt.setp(axs[feature_1, 0], ylabel='{}'.format(get_title(features_names[feature_1])))
-            for feature_2 in range(feature_1, nb_features):
-                axs = format_axis(axs, feature_1, feature_2)
-                data = filter_data(X[feature_1], X[feature_2], y[0])
-                for house in houses:
-                    [X1_per_house, X2_per_house] = clasify_data_per_house(data, house)
-                    if feature_1 == feature_2:
-                        axs[feature_1, feature_1].hist(X1_per_house, alpha=0.6)
-                    else:
-                        axs[feature_1, feature_2].scatter(X2_per_house, X1_per_house, alpha=0.07, marker='.')
-                        axs[feature_2, feature_1].scatter(X1_per_house, X2_per_house, alpha=0.07, marker='.')
-        plt.suptitle('Pair plot')
-        plt.show()
+        plot_plair_plot(X, y, features_names, len(features_names), model.houses)
     except NameError as e:
         print(e)
 
