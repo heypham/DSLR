@@ -53,6 +53,21 @@ class LogisticRegression(object):
         except:
             raise NameError('[Read error] Wrong file format. Make sure you give an existing .csv file as argument.')
 
+    def clean_data(self, X, y):
+        X_clean = []
+        y_clean = []
+        for i in range(X.shape[0]):
+            empty_value = 0
+            for j in range(X.shape[1]):
+                if X[i][j] != X[i][j]:
+                    empty_value = 1
+            if empty_value == 0:
+                X_clean.append(X[i])
+                y_clean.append(y[0][i])
+        X_clean = np.array(X_clean)
+        y_clean = np.array(y_clean).reshape(-1,1)
+        return X_clean.T, y_clean
+
     def split_data(self, X, y):
         """
         Splitting dataset into training data/testing data
@@ -96,6 +111,27 @@ class LogisticRegression(object):
         Xnorm = np.insert(Xnorm, 0, 1, axis=1)
         return Xnorm
 
+    def one_hot_encoding2(self, y):
+        """
+        Changes each y into 1x4 matrix
+        Gryffindor =  [ 1 0 0 0 ]
+        Slytherin =  [ 0 1 0 0 ]
+        Hufflepuff = [ 0 0 1 0 ]
+        Ravenclaw = [ 0 0 0 1 ]
+        """
+        y_encoded = []
+        count = 0
+        encoding = {
+            'Gryffindor': [1, 0, 0, 0],
+            'Slytherin': [0, 1, 0, 0],
+            'Hufflepuff': [0, 0, 1, 0],
+            'Ravenclaw': [0, 0, 0, 1]
+        }
+        for y_i in y:
+            y_encoded.append(encoding[y_i[0]])
+        y_encoded = np.array(y_encoded)
+        return y_encoded
+
     def one_hot_encoding(self, y):
         """
         Changes each y into 1x4 matrix
@@ -133,18 +169,18 @@ class LogisticRegression(object):
         """
         return 1 / (1 + np.exp(-z))
 
-    def hypothesis(self, features, weights):
+    def hypothesis(self, X, weights):
         """
             Predict the class
             **input: **
-                *features: (Numpy Matrix)
+                *X: (Numpy Matrix)
                 *weights: (Numpy vector)
             **reutrn: (Numpy vector)**
                 *0 or 1
         """
-        z = self.pre_activation(features, weights)
-        y = self.activation(z)
-        return np.round(y)
+        Z = self.pre_activation(X, weights)
+        G = self.activation(Z)
+        return G
 
     def cost(self, X, y, theta):
         """
@@ -154,6 +190,16 @@ class LogisticRegression(object):
         m = X.shape[0]
         prediction = self.activation(X, theta)
         cost = (1/(2*m) * np.sum(np.square(prediction - y)))
+        """
+        messy dirty cost to rewrite
+        """
+        H = model.hypothesis(X_norm, model.theta)
+        v1 = np.log(np.ones(H.shape) - H)
+        y_griffindor = y_encoded[:,0]
+        v2 = (np.ones(y_griffindor.shape) - y_griffindor).reshape(-1,1)
+        v3 = np.dot(v2.T, v1)
+        v4 = np.dot(y_griffindor, np.log(H)).reshape(-1,1)
+        cost = (-1/H.shape[0]) * (v4[0] + v3[0])
         return cost
 
     def fit(self, X, y, alpha, iter):
@@ -164,7 +210,7 @@ class LogisticRegression(object):
         m = X.shape[0]
         cost = []
         for _ in range(iter):
-            loss = self.activation(X, self.theta) - y
+            loss = self.hypothesis(X, self.theta) - y
             self.theta[0] -= (alpha / m) * np.sum(loss)
             self.theta[1] -= (alpha / m) * np.sum(loss * X)
             cost.append(self.cost(X, y, self.theta))
