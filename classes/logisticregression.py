@@ -24,7 +24,7 @@ class LogisticRegression(object):
         self.features = []
         self.mean = []
         self.stdev = []
-        self.theta = np.zeros(14).reshape(-1,1) # Need to change number of theta values to number of features + 1 (for bias)
+        self.thetas = np.zeros((14, 4))
 
     def parse_arg(self):
         parser = argparse.ArgumentParser(prog='describe', usage='%(prog)s [-h] datafile.csv', description='Program describing the dataset given.')
@@ -111,7 +111,7 @@ class LogisticRegression(object):
         Xnorm = np.insert(Xnorm, 0, 1, axis=1)
         return Xnorm
 
-    def one_hot_encoding2(self, y):
+    def one_hot_encoding(self, y):
         """
         Changes each y into 1x4 matrix
         Gryffindor =  [ 1 0 0 0 ]
@@ -129,28 +129,6 @@ class LogisticRegression(object):
         }
         for y_i in y:
             y_encoded.append(encoding[y_i[0]])
-        y_encoded = np.array(y_encoded)
-        return y_encoded
-
-    def one_hot_encoding(self, y):
-        """
-        Changes each y into 1x4 matrix
-        Ravenclaw =  [ 1 0 0 0 ]
-        Slytherin =  [ 0 1 0 0 ]
-        Gryffindor = [ 0 0 1 0 ]
-        Hufflepuff = [ 0 0 0 1 ]
-        """
-        y_encoded = []
-        count = 0
-        for y_i in y:
-            if y_i == "Ravenclaw":
-                y_encoded.append([1, 0, 0, 0])
-            elif y_i == "Slytherin":
-                y_encoded.append([0, 1, 0, 0])
-            elif y_i == "Gryffindor":
-                y_encoded.append([0, 0, 1, 0])
-            elif y_i == "Hufflepuff":
-                y_encoded.append([0, 0, 0, 1])
         y_encoded = np.array(y_encoded)
         return y_encoded
 
@@ -206,13 +184,22 @@ class LogisticRegression(object):
         """
         Gradient descent algorithm to update theta values
         """
-        X = self.feature_scale_normalise(X)
         m = X.shape[0]
         cost = []
         for _ in range(iter):
-            loss = self.hypothesis(X, self.theta) - y
-            self.theta[0] -= (alpha / m) * np.sum(loss)
-            self.theta[1] -= (alpha / m) * np.sum(loss * X)
-            cost.append(self.cost(X, y, self.theta))
-        print("theta : ", self.theta)
-        return self.theta
+            loss = (self.hypothesis(X, self.thetas) - y).T
+            loss_per_feature = np.dot(loss, X).T
+            self.thetas -= alpha * (1/m) * loss_per_feature
+        return self.thetas
+            # cost.append(self.cost(X, y, self.theta))
+        # return self.thetas, cost
+
+    def H_from_probability_to_absolute_values(self, X):
+        m = X.shape[0]
+        H_absolute = []
+        H_pobability = self.hypothesis(X, self.thetas)
+        for i in range(m):
+            H_absolute.append([0, 0, 0, 0])
+            H_absolute[i][np.argmax(H_pobability[i])] = 1
+        H_absolute = np.array(H_absolute)
+        return H_absolute
