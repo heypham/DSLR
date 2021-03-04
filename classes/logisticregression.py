@@ -72,7 +72,7 @@ class LogisticRegression(object):
         """
         Splitting dataset into training data/testing data
         """
-        X_train, X_test, y_train, y_test = train_test_split(X.T,y.T, train_size=0.8,test_size=0.2,random_state=100)
+        X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.8,test_size=0.2,random_state=100)
         return X_train, X_test, y_train, y_test
 
     def remove_empty_values(self, X):

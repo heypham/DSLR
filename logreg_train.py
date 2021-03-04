@@ -3,7 +3,6 @@
 try:
     from classes.logisticregression import LogisticRegression
     import matplotlib.pyplot as plt
-    import numpy as np
 except NameError as e:
     print(e)
     print('[Import error] Please run <pip install -r requirements.txt>')
@@ -16,17 +15,17 @@ def main():
         X, y, features = model.read_csv(args.datafile)
         X_clean, y_clean = model.clean_data(X.T, y)
         X_norm = model.feature_scale_normalise(X_clean)
-
-        # X_train, X_test, y_train, y_test = model.split_data(X_norm.T, y_clean)
-        # y_train_encoded = model.one_hot_encoding(y_train)
-        # y_test_encoded = model.one_hot_encoding(y_test)
-
         y_encoded = model.one_hot_encoding(y_clean)
-        tethas = model.fit(X_norm, y_encoded, 0.1, 100)
-        H = model.H_from_probability_to_absolute_values(X_norm)
-        for i in range(H.shape[0]):
-            if (H[i] != y_encoded[i]).all():
-                print('H = {} || y = {}'.format(H[i], y_encoded[i]))
+        X_train, X_test, y_train, y_test = model.split_data(X_norm, y_encoded)
+        tethas = model.fit(X_train, y_train, 0.1, 100)
+        H = model.H_from_probability_to_absolute_values(X_train)
+        """
+        Chekcing the differences !
+        """
+        m = H.shape[0]
+        for i in range(m):
+            if (H[i] != y_train[i]).all():
+                print('H = {} || y = {}'.format(H[i], y_train[i]))
 
     except NameError as e:
         print(e)
