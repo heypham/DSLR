@@ -2,7 +2,7 @@
 
 try:
     from classes.logisticregression import LogisticRegression
-    import matplotlib.pyplot as plt
+    import pickle
 except NameError as e:
     print(e)
     print('[Import error] Please run <pip install -r requirements.txt>')
@@ -26,6 +26,13 @@ def main():
         for i in range(m):
             if (H[i] != y_train[i]).all():
                 print('H = {} || y = {}'.format(H[i], y_train[i]))
+
+        """
+        Saving the model in a pickle
+        """
+        pickle.dump(model, open("logreg_model.42", 'wb'))
+        prediction = model.predict(X_test)
+        model.validate(prediction, y_test)
 
     except NameError as e:
         print(e)
