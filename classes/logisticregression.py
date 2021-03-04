@@ -203,3 +203,36 @@ class LogisticRegression(object):
             H_absolute[i][np.argmax(H_pobability[i])] = 1
         H_absolute = np.array(H_absolute)
         return H_absolute
+
+    def validate(self, result, y):
+        """
+        Compares X_test predictions with actual result
+        """
+        incorrect = 0
+        m = result.shape[0]
+        for i in range(m):
+            pos = np.argmax(y[i])
+            house = self.houses[pos]
+            if result[i] != house:
+                incorrect += 1
+                print('i = {} ||  predicted = {} || actual = {}'.format(i, result[i], house))
+        print("Test results : {}".format((m - incorrect)/m))
+
+    def predict(self, X):
+        """
+        Predict house name of student given his grades
+        """
+        # X_norm = self.feature_scale_normalise(X)
+        prediction = self.hypothesis(X, self.thetas)
+        result = []
+        index = []
+        for i in range(prediction.shape[0]):
+            house_index = np.argmax(prediction[i])
+            result.append(self.houses[house_index])
+        result = np.array(result)
+        df = pd.DataFrame(data=result, columns=["Hogwarts Houses"])
+        df.index.name = "Index"
+        df.to_csv('houses.csv', index=True)
+        return result
+
+    
