@@ -183,25 +183,20 @@ class LogisticRegression(object):
         except:
             raise NameError('[Process error] There has been an error while processing.')
 
-    def cost(self, X, y, theta):
+    def cost(self, H, y, theta):
         """
         Calculates cost for given X and y
         the higher the cost, the more inaccurate the theta values are
         """
-        m = X.shape[0]
-        prediction = self.activation(X, theta)
-        cost = (1/(2*m) * np.sum(np.square(prediction - y)))
-        """
-        messy dirty cost to rewrite
-        """
-        H = model.hypothesis(X_norm, model.theta)
-        v1 = np.log(np.ones(H.shape) - H)
-        y_griffindor = y_encoded[:,0]
-        v2 = (np.ones(y_griffindor.shape) - y_griffindor).reshape(-1,1)
-        v3 = np.dot(v2.T, v1)
-        v4 = np.dot(y_griffindor, np.log(H)).reshape(-1,1)
-        cost = (-1/H.shape[0]) * (v4[0] + v3[0])
-        return cost
+        try:
+            m = H.shape[0]
+            log_not_H = np.log(np.ones(H.shape) - H)
+            not_y = np.ones(y.shape) - y
+            loss = np.dot(y.T, np.log(H)) + np.dot(not_y.T, log_not_H)
+            cost = (-1/m) * loss
+            return np.array(cost)
+        except:
+            raise NameError('[Process error] There has been an error while processing.')
 
     def fit(self, X, y, alpha, iter):
         """
@@ -211,12 +206,12 @@ class LogisticRegression(object):
             m = X.shape[0]
             cost = []
             for _ in range(iter):
-                loss = (self.hypothesis(X, self.thetas) - y).T
+                H = self.hypothesis(X, self.thetas)
+                loss = (H - y).T
                 loss_per_feature = np.dot(loss, X).T
                 self.thetas -= alpha * (1/m) * loss_per_feature
+                cost.append(self.cost(H, y, self.thetas))
             return self.thetas
-                # cost.append(self.cost(X, y, self.theta))
-            # return self.thetas, cost
         except:
             raise NameError('[Process error] There has been an error while processing.')
 
