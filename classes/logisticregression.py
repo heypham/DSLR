@@ -120,15 +120,11 @@ class LogisticRegression(object):
         Ravenclaw = [ 0 0 0 1 ]
         """
         y_encoded = []
-        count = 0
-        encoding = {
-            'Gryffindor': [1, 0, 0, 0],
-            'Slytherin': [0, 1, 0, 0],
-            'Hufflepuff': [0, 0, 1, 0],
-            'Ravenclaw': [0, 0, 0, 1]
-        }
-        for y_i in y:
-            y_encoded.append(encoding[y_i[0]])
+        m = y.shape[0]
+        for i in range(m):
+            house_index = self.houses.index(y[i][0])
+            y_encoded.append([0, 0, 0, 0])
+            y_encoded[i][house_index] = 1
         y_encoded = np.array(y_encoded)
         return y_encoded
 
