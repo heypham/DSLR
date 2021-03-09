@@ -245,7 +245,8 @@ class LogisticRegression(object):
             log_not_H = np.log(np.ones(H.shape) - H)
             not_y = np.ones(y.shape) - y
             loss = np.dot(y.T, np.log(H)) + np.dot(not_y.T, log_not_H)
-            cost = (-1/m) * loss
+            cost_matrix = (-1/m) * loss
+            cost = [cost_matrix[0][0], cost_matrix[1][1], cost_matrix[2][2], cost_matrix[3][3]]
             return np.array(cost)
         except:
             raise NameError('[Process error] There has been an error while processing.')
@@ -274,6 +275,7 @@ class LogisticRegression(object):
                 print('\n\tFINAL TETHAS [ iteration {} ]'.format(i))
                 print(' [ Gryffindor  Slytherin   Hufflepuff  Ravenclaw ]')
                 print('{}'.format(self.thetas))
+            # print(cost)
             return self.thetas
         except:
             raise NameError('[Process error] There has been an error while processing.')
