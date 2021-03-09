@@ -83,16 +83,19 @@ class LogisticRegression(object):
         except:
             raise NameError('[Process error] There has been an error while cleaning the data.')
 
-    def split_data(self, X, y, verbose):
+    def split_data(self, X, y, train_percentage, verbose):
         """
         Splitting dataset into training data/testing data
         """
         try:
-            X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.8,test_size=0.2,random_state=100)
+            train = float(train_percentage)
+            test = float(1 - train)
+            print(train, test)
+            X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=train, test_size=test, random_state=100)
             if verbose > 0:
                 print('\n-->\tSplitting dataset')
             if verbose > 1:
-                print('\t80% train\n\t20% test')
+                print('\t{:.2f} % train\n\t{:.2f} % test'.format(train * 100, test * 100))
             return X_train, X_test, y_train, y_test
         except:
             raise NameError('[Process error] There has been an error while splitting the dataset.')
