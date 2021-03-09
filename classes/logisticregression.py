@@ -1,8 +1,14 @@
-import argparse
-import numpy as np
-import pandas as pd
-from classes.feature import Feature
-from sklearn.model_selection import train_test_split
+#/usr/bin/python3
+
+try:
+    import numpy as np
+    import pandas as pd
+    from classes.feature import Feature
+    from sklearn.model_selection import train_test_split
+except NameError as e:
+    print(e)
+    print('[Import error] Please run <pip install -r requirements.txt>')
+    exit()
 
 class LogisticRegression(object):
     """
@@ -34,7 +40,7 @@ class LogisticRegression(object):
             return args
         except:
             raise NameError('[Parse error] There has been an error while parsing the arguments.')
-    
+
     def read_csv(self, datafile):
         """
         Function to read csv file and split into training/testing sets
@@ -212,19 +218,6 @@ class LogisticRegression(object):
                 self.thetas -= alpha * (1/m) * loss_per_feature
                 cost.append(self.cost(H, y, self.thetas))
             return self.thetas
-        except:
-            raise NameError('[Process error] There has been an error while processing.')
-
-    def H_from_probability_to_absolute_values(self, X):
-        try:
-            m = X.shape[0]
-            H_absolute = []
-            H_pobability = self.hypothesis(X, self.thetas)
-            for i in range(m):
-                H_absolute.append([0, 0, 0, 0])
-                H_absolute[i][np.argmax(H_pobability[i])] = 1
-            H_absolute = np.array(H_absolute)
-            return H_absolute
         except:
             raise NameError('[Process error] There has been an error while processing.')
 
