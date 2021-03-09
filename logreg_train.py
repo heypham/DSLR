@@ -11,7 +11,7 @@ except NameError as e:
 
 def parse_arguments():
     try:
-        parser = argparse.ArgumentParser(prog='logreg_train.py', usage='%(prog)s [-h][-v {1,2}][-al][-it] datafile.csv', description='Train the model to predict the Hogwarts house.')
+        parser = argparse.ArgumentParser(prog='logreg_train.py', usage='%(prog)s [-h][-v {1,2,3}][-al][-it][-cst] datafile.csv', description='Train the model to predict the Hogwarts house.')
         parser.add_argument('datafile', help='.csv file containing the data to train the model')
         parser.add_argument('-v', '--verbose', help='increase output verbosity', type=int, default=0)
         parser.add_argument('-al', '--alpha', help='[default = 0.01]', type=float, default=0.01)
@@ -21,11 +21,13 @@ def parse_arguments():
     except:
         raise NameError('\n[Input error]\nThere has been an error while parsing the arguments.\n')
 
-def save_model(model):
+def save_model(model, verbose):
     try:
         outfile = open('logreg_model.42', 'wb')
         pickle.dump(model, outfile)
         outfile.close()
+        if verbose > 0:
+            print('\n-->\tSaving model')
     except:
         raise NameError('\n[Save error]\nThere has been an error while saving the information.\n')
 
@@ -33,13 +35,17 @@ def main():
     try:
         args = parse_arguments()
         model = LogisticRegression()
-        X, y, features = model.read_csv(args.datafile)
-        X_clean, y_clean = model.clean_data(X.T, y)
-        X_norm = model.feature_scale_normalise(X_clean)
-        y_encoded = model.one_hot_encoding(y_clean)
-        X_train, X_test, y_train, y_test = model.split_data(X_norm, y_encoded)
-        tethas = model.fit(X_train, y_train, args.alpha, args.iterations)
-        save_model(model)
+        if args.verbose > 0:
+            print('\n[ Process information ]')
+        X, y, features = model.read_csv(args.datafile, args.verbose)
+        X_clean, y_clean = model.clean_data(X.T, y, args.verbose)
+        X_norm = model.feature_scale_normalise(X_clean, args.verbose)
+        y_encoded = model.one_hot_encoding(y_clean, args.verbose)
+        X_train, X_test, y_train, y_test = model.split_data(X_norm, y_encoded, args.verbose)
+        tethas = model.fit(X_train, y_train, args.alpha, args.iterations, args.verbose)
+        save_model(model, args.verbose)
+        if args.verbose > 0:
+            print('\n[ Process completed ]\n')
         # prediction = model.predict(X_test)
         # model.validate(prediction, y_test)
     except NameError as e:
