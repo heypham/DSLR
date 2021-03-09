@@ -1,8 +1,14 @@
-import argparse
-import numpy as np
-import pandas as pd
-from classes.feature import Feature
-from sklearn.model_selection import train_test_split
+#/usr/bin/python3
+
+try:
+    import numpy as np
+    import pandas as pd
+    from classes.feature import Feature
+    from sklearn.model_selection import train_test_split
+except NameError as e:
+    print(e)
+    print('[Import error] Please run <pip install -r requirements.txt>')
+    exit()
 
 class LogisticRegression(object):
     """
@@ -34,8 +40,8 @@ class LogisticRegression(object):
             return args
         except:
             raise NameError('[Parse error] There has been an error while parsing the arguments.')
-    
-    def read_csv(self, datafile):
+
+    def read_csv(self, datafile, verbose):
         """
         Function to read csv file and split into training/testing sets
         returns train/test sets for X and y + list of 4 houses
@@ -49,11 +55,13 @@ class LogisticRegression(object):
             self.X = np.array(X).T
             self.y = np.array([y])
             self.features = np.array(features).T
+            if verbose > 0:
+                print('\n-->\tReading CSV file.')
             return self.X, self.y, self.features
         except:
             raise NameError('[Read error] Wrong file format. Make sure you give an existing .csv file as argument.')
 
-    def clean_data(self, X, y):
+    def clean_data(self, X, y, verbose):
         try:
             X_clean = []
             y_clean = []
@@ -67,19 +75,30 @@ class LogisticRegression(object):
                     y_clean.append(y[0][i])
             X_clean = np.array(X_clean)
             y_clean = np.array(y_clean).reshape(-1,1)
+            if verbose > 0:
+                print('\n-->\tCleaning dataset.')
+            if verbose > 1:
+                print('\tThe rows with empty values have been removed.')
             return X_clean.T, y_clean
         except:
-            raise NameError('[Process error] There has been an error while processing.')
+            raise NameError('[Process error] There has been an error while cleaning the data.')
 
-    def split_data(self, X, y):
+    def split_data(self, X, y, train_percentage, verbose):
         """
         Splitting dataset into training data/testing data
         """
         try:
-            X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.8,test_size=0.2,random_state=100)
+            train = float(train_percentage)
+            test = float(1 - train)
+            print(train, test)
+            X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=train, test_size=test, random_state=100)
+            if verbose > 0:
+                print('\n-->\tSplitting dataset')
+            if verbose > 1:
+                print('\t{:.2f} % train\n\t{:.2f} % test'.format(train * 100, test * 100))
             return X_train, X_test, y_train, y_test
         except:
-            raise NameError('[Process error] There has been an error while processing.')
+            raise NameError('[Process error] There has been an error while splitting the dataset.')
 
     def fill_data(self, X, mean):
         """
@@ -129,7 +148,7 @@ class LogisticRegression(object):
         except:
             raise NameError('[Process error] There has been an error while processing.')
 
-    def feature_scale_normalise(self, X):
+    def feature_scale_normalise(self, X, verbose):
         """
         Normalises & Standardise each feature vector in X
         using Feature class
@@ -146,11 +165,13 @@ class LogisticRegression(object):
             Xnorm = np.array(Xnorm)
             Xnorm = Xnorm.T
             Xnorm = np.insert(Xnorm, 0, 1, axis=1)
+            if verbose > 0:
+                print('\n-->\tNormalising dataset.')
             return Xnorm
         except:
             raise NameError('[Process error] There has been an error while processing.')
 
-    def one_hot_encoding(self, y):
+    def one_hot_encoding(self, y, verbose):
         """
         Changes each y into 1x4 matrix
         Gryffindor =  [ 1 0 0 0 ]
@@ -166,6 +187,13 @@ class LogisticRegression(object):
                 y_encoded.append([0, 0, 0, 0])
                 y_encoded[i][house_index] = 1
             y_encoded = np.array(y_encoded)
+            if verbose > 0:
+                print('\n-->\tOne hot encodinging the House values.')
+            if verbose > 1:
+                print('\tGryffindor  [ 1 0 0 0 ]')
+                print('\tSlytherin   [ 0 1 0 0 ]')
+                print('\tHufflepuff  [ 0 0 1 0 ]')
+                print('\tRavenclaw   [ 0 0 0 1 ]')
             return y_encoded
         except:
             raise NameError('[Process error] There has been an error while processing.')
@@ -222,33 +250,31 @@ class LogisticRegression(object):
         except:
             raise NameError('[Process error] There has been an error while processing.')
 
-    def fit(self, X, y, alpha, iter):
+    def fit(self, X, y, learning_rate, iter, calculate_cost, verbose):
         """
         Gradient descent algorithm to update theta values
         """
         try:
             m = X.shape[0]
             cost = []
-            for _ in range(iter):
+            if verbose > 0:
+                print('\n-->\tTRAINING THE MODEL')
+            for i in range(iter):
                 H = self.hypothesis(X, self.thetas)
                 loss = (H - y).T
                 loss_per_feature = np.dot(loss, X).T
-                self.thetas -= alpha * (1/m) * loss_per_feature
-                cost.append(self.cost(H, y, self.thetas))
+                self.thetas -= learning_rate * (1/m) * loss_per_feature
+                if verbose > 2 and i % 25 == 0:
+                    print('\n\tTETHAS [ iteration {} ]'.format(i))
+                    print(' [ Gryffindor  Slytherin   Hufflepuff  Ravenclaw ]')
+                    print('{}'.format(self.thetas))
+                if calculate_cost:
+                    cost.append(self.cost(H, y, self.thetas))
+            if verbose > 1:
+                print('\n\tFINAL TETHAS [ iteration {} ]'.format(i))
+                print(' [ Gryffindor  Slytherin   Hufflepuff  Ravenclaw ]')
+                print('{}'.format(self.thetas))
             return self.thetas
-        except:
-            raise NameError('[Process error] There has been an error while processing.')
-
-    def H_from_probability_to_absolute_values(self, X):
-        try:
-            m = X.shape[0]
-            H_absolute = []
-            H_pobability = self.hypothesis(X, self.thetas)
-            for i in range(m):
-                H_absolute.append([0, 0, 0, 0])
-                H_absolute[i][np.argmax(H_pobability[i])] = 1
-            H_absolute = np.array(H_absolute)
-            return H_absolute
         except:
             raise NameError('[Process error] There has been an error while processing.')
 
