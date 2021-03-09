@@ -100,6 +100,28 @@ class LogisticRegression(object):
         except:
             raise NameError('[Process error] There has been an error while splitting the dataset.')
 
+    def fill_data(self, X, mean):
+        """
+        For predictor, filling empty data with corresponding feature mean so it doesn't affect the result.
+        """
+        try:
+            X_filled = []
+            num_features = X.shape[0]
+            len_data = X.shape[1]
+            for i in range(num_features):
+                current_feature = []
+                for j in range(len_data):
+                    if X[i][j] != X[i][j]:
+                        x_i_j = mean[i]
+                    else:
+                        x_i_j = X[i][j]
+                    current_feature.append(x_i_j)
+                X_filled.append(current_feature)
+            X_filled = np.array(X_filled)
+            return X_filled
+        except:
+            raise NameError('[Process error] The dataset cannot be filled.')
+
     def remove_empty_values(self, X):
         try:
             x_filtered = []
@@ -133,10 +155,12 @@ class LogisticRegression(object):
         """
         try:
             Xnorm = []
-            features_describe = self.describe(self.features, X)
+            if self.mean == [] and self.stdev == []:
+                features_describe = self.describe(self.features, X)
             for i in range(len(X)):
-                self.mean.append(features_describe[i].mean)
-                self.stdev.append(features_describe[i].std)
+                if self.mean == [] and self.stdev == []:
+                    self.mean.append(features_describe[i].mean)
+                    self.stdev.append(features_describe[i].std)
                 Xnorm.append((X[i] - self.mean[i]) / self.stdev[i])
             Xnorm = np.array(Xnorm)
             Xnorm = Xnorm.T
@@ -283,9 +307,9 @@ class LogisticRegression(object):
                 house_index = np.argmax(prediction[i])
                 result.append(self.houses[house_index])
             result = np.array(result)
-            df = pd.DataFrame(data=result, columns=["Hogwarts Houses"])
+            df = pd.DataFrame(data=result, columns=["Hogwarts House"])
             df.index.name = "Index"
-            df.to_csv('houses.csv', index=True)
+            df.to_csv('datasets/houses.csv', index=True)
             return result
         except:
             raise NameError('[Process error] There has been an error while processing.')
