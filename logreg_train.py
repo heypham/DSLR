@@ -16,6 +16,7 @@ def parse_arguments():
         parser.add_argument('-v', '--verbose', help='increase output verbosity', type=int, default=0)
         parser.add_argument('-lr', '--learning_rate', help='[default = 0.01]', type=float, default=0.01)
         parser.add_argument('-it', '--iterations', help='[default = 1000]', type=int, default=1000)
+        parser.add_argument('-cst', '--cost', help='cost function', action='store_true')
         args = parser.parse_args()
         return args
     except:
@@ -42,7 +43,7 @@ def main():
         X_norm = model.feature_scale_normalise(X_clean, args.verbose)
         y_encoded = model.one_hot_encoding(y_clean, args.verbose)
         X_train, X_test, y_train, y_test = model.split_data(X_norm, y_encoded, args.verbose)
-        tethas = model.fit(X_train, y_train, args.learning_rate, args.iterations, args.verbose)
+        tethas = model.fit(X_train, y_train, args.learning_rate, args.iterations, args.cost, args.verbose)
         save_model(model, args.verbose)
         if args.verbose > 0:
             print('\n[ Process completed ]\n')

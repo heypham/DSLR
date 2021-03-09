@@ -223,7 +223,7 @@ class LogisticRegression(object):
         except:
             raise NameError('[Process error] There has been an error while processing.')
 
-    def fit(self, X, y, learning_rate, iter, verbose):
+    def fit(self, X, y, learning_rate, iter, calculate_cost, verbose):
         """
         Gradient descent algorithm to update theta values
         """
@@ -241,7 +241,8 @@ class LogisticRegression(object):
                     print('\n\tTETHAS [ iteration {} ]'.format(i))
                     print(' [ Gryffindor  Slytherin   Hufflepuff  Ravenclaw ]')
                     print('{}'.format(self.thetas))
-                cost.append(self.cost(H, y, self.thetas))
+                if calculate_cost:
+                    cost.append(self.cost(H, y, self.thetas))
             if verbose > 1:
                 print('\n\tFINAL TETHAS [ iteration {} ]'.format(i))
                 print(' [ Gryffindor  Slytherin   Hufflepuff  Ravenclaw ]')
