@@ -32,6 +32,7 @@ class LogisticRegression(object):
         self.mean = []
         self.stdev = []
         self.thetas = np.zeros((14, 4))
+        self.cost_history = []
 
     def parse_arg(self):
         try:
@@ -282,8 +283,8 @@ class LogisticRegression(object):
                 print('\n\tFINAL TETHAS [ iteration {} ]'.format(i))
                 print(' [ Gryffindor  Slytherin   Hufflepuff  Ravenclaw ]')
                 print('{}'.format(self.thetas))
-            # print(cost_history)
-            return self.thetas
+            if calculate_cost:
+                self.cost_history = cost_history
         except:
             raise NameError('[Process error] There has been an error while processing (Fit function).')
 
@@ -303,6 +304,9 @@ class LogisticRegression(object):
             print("Test results : {}".format((m - incorrect)/m))
         except:
             raise NameError('[Process error] There has been an error while processing (validation function).')
+
+    def plot_cost(self):
+        print("EMILIE I LOVE U")
 
     def predict(self, X):
         """
