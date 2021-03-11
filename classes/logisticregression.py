@@ -95,7 +95,6 @@ class LogisticRegression(object):
         try:
             train = float(train_percentage)
             test = float(1 - train)
-            print(train, test)
             X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=train, test_size=test, random_state=100)
             if self.verbose > 0:
                 print('\n-->\tSplitting dataset')
@@ -135,7 +134,7 @@ class LogisticRegression(object):
                     x_filtered.append(x)
             return x_filtered
         except:
-            raise NameError('[Process error] There has been an error while processing.')
+            raise NameError('[Process error] There has been an error while removing empty values.')
 
     def describe(self, features_names, X):
         """
@@ -148,10 +147,12 @@ class LogisticRegression(object):
             for x in X:
                 feature = Feature(features_names[i], self.remove_empty_values(x))
                 features.append(feature)
+                self.mean.append(feature.mean)
+                self.stdev.append(feature.std)
                 i +=1
             return features
         except:
-            raise NameError('[Process error] There has been an error while processing.')
+            raise NameError('[Process error] There has been an error while processing in describe method.')
 
     def feature_scale_normalise(self, X):
         """
@@ -160,12 +161,12 @@ class LogisticRegression(object):
         """
         try:
             Xnorm = []
-            if self.mean == [] and self.stdev == []:
+            if not self.mean and not self.stdev:
                 features_describe = self.describe(self.features, X)
             for i in range(len(X)):
-                if self.mean == [] and self.stdev == []:
-                    self.mean.append(features_describe[i].mean)
-                    self.stdev.append(features_describe[i].std)
+                # if not self.mean and not self.stdev:
+                #     self.mean.append(features_describe[i].mean)
+                #     self.stdev.append(features_describe[i].std)
                 Xnorm.append((X[i] - self.mean[i]) / self.stdev[i])
             Xnorm = np.array(Xnorm)
             Xnorm = Xnorm.T
@@ -173,8 +174,9 @@ class LogisticRegression(object):
             if self.verbose > 0:
                 print('\n-->\tNormalising dataset.')
             return Xnorm
-        except:
-            raise NameError('[Process error] There has been an error while processing.')
+        except NameError as e:
+            print(e)
+            raise NameError('[Process error] There has been an error while processing (feature scaling/normalising).')
 
     def one_hot_encoding(self, y):
         """
@@ -201,7 +203,7 @@ class LogisticRegression(object):
                 print('\tRavenclaw   [ 0 0 0 1 ]')
             return y_encoded
         except:
-            raise NameError('[Process error] There has been an error while processing.')
+            raise NameError('[Process error] There has been an error while processing (One hot encoding).')
 
     def pre_activation(self, X, theta):
         """
@@ -212,7 +214,7 @@ class LogisticRegression(object):
             ret = np.dot(X, theta)
             return ret
         except:
-            raise NameError('[Process error] There has been an error while processing.')
+            raise NameError('[Process error] There has been an error while processing (pre activation).')
 
     def activation(self, z):
         """
@@ -222,7 +224,7 @@ class LogisticRegression(object):
         try:
             return 1 / (1 + np.exp(-z))
         except:
-            raise NameError('[Process error] There has been an error while processing.')
+            raise NameError('[Process error] There has been an error while processing (activation).')
 
     def hypothesis(self, X, weights):
         """
@@ -238,7 +240,7 @@ class LogisticRegression(object):
             H = self.activation(Z)
             return H
         except:
-            raise NameError('[Process error] There has been an error while processing.')
+            raise NameError('[Process error] There has been an error while processing (hypothesis).')
 
     def cost(self, H, y, theta):
         """
@@ -254,7 +256,7 @@ class LogisticRegression(object):
             cost = [cost_matrix[0][0], cost_matrix[1][1], cost_matrix[2][2], cost_matrix[3][3]]
             return np.array(cost)
         except:
-            raise NameError('[Process error] There has been an error while processing.')
+            raise NameError('[Process error] There has been an error while processing (cost function).')
 
     def fit(self, X, y, learning_rate, iter, calculate_cost):
         """
@@ -262,7 +264,7 @@ class LogisticRegression(object):
         """
         try:
             m = X.shape[0]
-            cost = []
+            cost_history = []
             if self.verbose > 0:
                 print('\n-->\tTRAINING THE MODEL')
             for i in range(iter):
@@ -275,15 +277,15 @@ class LogisticRegression(object):
                     print(' [ Gryffindor  Slytherin   Hufflepuff  Ravenclaw ]')
                     print('{}'.format(self.thetas))
                 if calculate_cost:
-                    cost.append(self.cost(H, y, self.thetas))
+                    cost_history.append(self.cost(H, y, self.thetas))
             if self.verbose > 1:
                 print('\n\tFINAL TETHAS [ iteration {} ]'.format(i))
                 print(' [ Gryffindor  Slytherin   Hufflepuff  Ravenclaw ]')
                 print('{}'.format(self.thetas))
-            # print(cost)
+            # print(cost_history)
             return self.thetas
         except:
-            raise NameError('[Process error] There has been an error while processing.')
+            raise NameError('[Process error] There has been an error while processing (Fit function).')
 
     def validate(self, result, y):
         """
@@ -300,7 +302,7 @@ class LogisticRegression(object):
                     print('i = {} ||  predicted = {} || actual = {}'.format(i, result[i], house))
             print("Test results : {}".format((m - incorrect)/m))
         except:
-            raise NameError('[Process error] There has been an error while processing.')
+            raise NameError('[Process error] There has been an error while processing (validation function).')
 
     def predict(self, X):
         """
@@ -319,5 +321,5 @@ class LogisticRegression(object):
             df.to_csv('datasets/houses.csv', index=True)
             return result
         except:
-            raise NameError('[Process error] There has been an error while processing.')
+            raise NameError('[Process error] There has been an error while processing (predictor).')
     

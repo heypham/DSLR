@@ -44,10 +44,9 @@ def main():
         X_clean, y_clean = model.clean_data(X.T, y)
         X_norm = model.feature_scale_normalise(X_clean)
         y_encoded = model.one_hot_encoding(y_clean)
-        print(args.training_percentage)
         X_train, X_test, y_train, y_test = model.split_data(X_norm, y_encoded, args.training_percentage)
         tethas = model.fit(X_train, y_train, args.learning_rate, args.iterations, args.cost)
-        save_model(model)
+        save_model(model, args.verbose)
         if args.verbose > 0:
             print('\n[ Process completed ]\n')
         # prediction = model.predict(X_test)
