@@ -4,6 +4,7 @@ try:
     import numpy as np
     import pandas as pd
     from classes.feature import Feature
+    import matplotlib.pyplot as plt
     from sklearn.model_selection import train_test_split
 except NameError as e:
     print(e)
@@ -284,7 +285,7 @@ class LogisticRegression(object):
                 print(' [ Gryffindor  Slytherin   Hufflepuff  Ravenclaw ]')
                 print('{}'.format(self.thetas))
             if calculate_cost:
-                self.cost_history = cost_history
+                self.cost_history = np.array(cost_history)
         except:
             raise NameError('[Process error] There has been an error while processing (Fit function).')
 
@@ -306,7 +307,15 @@ class LogisticRegression(object):
             raise NameError('[Process error] There has been an error while processing (validation function).')
 
     def plot_cost(self):
-        print("EMILIE I LOVE U")
+        plt.title('Cost history plot')
+        x = range(len(self.cost_history))
+        self.cost_history = self.cost_history.T
+        for i in range(len(self.cost_history)):
+            plt.plot(x, self.cost_history[i], label=self.houses[i], color=self.colors[self.houses[i]])
+        plt.xlabel('iteration')
+        plt.ylabel('cost')
+        plt.legend()
+        plt.show()
 
     def predict(self, X):
         """
