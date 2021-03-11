@@ -25,6 +25,7 @@ class LogisticRegression(object):
             'Hufflepuff': 'yellow',
             'Ravenclaw': 'blue'
         }
+        self.verbose = 0
         self.X = []
         self.y = []
         self.features = []
@@ -41,7 +42,7 @@ class LogisticRegression(object):
         except:
             raise NameError('[Parse error] There has been an error while parsing the arguments.')
 
-    def read_csv(self, datafile, verbose):
+    def read_csv(self, datafile):
         """
         Function to read csv file and split into training/testing sets
         returns train/test sets for X and y + list of 4 houses
@@ -55,13 +56,17 @@ class LogisticRegression(object):
             self.X = np.array(X).T
             self.y = np.array([y])
             self.features = np.array(features).T
-            if verbose > 0:
+            if self.verbose > 0:
                 print('\n-->\tReading CSV file.')
             return self.X, self.y, self.features
         except:
             raise NameError('[Read error] Wrong file format. Make sure you give an existing .csv file as argument.')
 
-    def clean_data(self, X, y, verbose):
+    def set_verbose(self, verbose):
+        if verbose:
+            self.verbose = verbose
+
+    def clean_data(self, X, y):
         try:
             X_clean = []
             y_clean = []
@@ -75,15 +80,15 @@ class LogisticRegression(object):
                     y_clean.append(y[0][i])
             X_clean = np.array(X_clean)
             y_clean = np.array(y_clean).reshape(-1,1)
-            if verbose > 0:
+            if self.verbose > 0:
                 print('\n-->\tCleaning dataset.')
-            if verbose > 1:
+            if self.verbose > 1:
                 print('\tThe rows with empty values have been removed.')
             return X_clean.T, y_clean
         except:
             raise NameError('[Process error] There has been an error while cleaning the data.')
 
-    def split_data(self, X, y, train_percentage, verbose):
+    def split_data(self, X, y, train_percentage):
         """
         Splitting dataset into training data/testing data
         """
@@ -92,9 +97,9 @@ class LogisticRegression(object):
             test = float(1 - train)
             print(train, test)
             X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=train, test_size=test, random_state=100)
-            if verbose > 0:
+            if self.verbose > 0:
                 print('\n-->\tSplitting dataset')
-            if verbose > 1:
+            if self.verbose > 1:
                 print('\t{:.2f} % train\n\t{:.2f} % test'.format(train * 100, test * 100))
             return X_train, X_test, y_train, y_test
         except:
@@ -148,7 +153,7 @@ class LogisticRegression(object):
         except:
             raise NameError('[Process error] There has been an error while processing.')
 
-    def feature_scale_normalise(self, X, verbose):
+    def feature_scale_normalise(self, X):
         """
         Normalises & Standardise each feature vector in X
         using Feature class
@@ -165,13 +170,13 @@ class LogisticRegression(object):
             Xnorm = np.array(Xnorm)
             Xnorm = Xnorm.T
             Xnorm = np.insert(Xnorm, 0, 1, axis=1)
-            if verbose > 0:
+            if self.verbose > 0:
                 print('\n-->\tNormalising dataset.')
             return Xnorm
         except:
             raise NameError('[Process error] There has been an error while processing.')
 
-    def one_hot_encoding(self, y, verbose):
+    def one_hot_encoding(self, y):
         """
         Changes each y into 1x4 matrix
         Gryffindor =  [ 1 0 0 0 ]
@@ -187,9 +192,9 @@ class LogisticRegression(object):
                 y_encoded.append([0, 0, 0, 0])
                 y_encoded[i][house_index] = 1
             y_encoded = np.array(y_encoded)
-            if verbose > 0:
+            if self.verbose > 0:
                 print('\n-->\tOne hot encodinging the House values.')
-            if verbose > 1:
+            if self.verbose > 1:
                 print('\tGryffindor  [ 1 0 0 0 ]')
                 print('\tSlytherin   [ 0 1 0 0 ]')
                 print('\tHufflepuff  [ 0 0 1 0 ]')
@@ -251,27 +256,27 @@ class LogisticRegression(object):
         except:
             raise NameError('[Process error] There has been an error while processing.')
 
-    def fit(self, X, y, learning_rate, iter, calculate_cost, verbose):
+    def fit(self, X, y, learning_rate, iter, calculate_cost):
         """
         Gradient descent algorithm to update theta values
         """
         try:
             m = X.shape[0]
             cost = []
-            if verbose > 0:
+            if self.verbose > 0:
                 print('\n-->\tTRAINING THE MODEL')
             for i in range(iter):
                 H = self.hypothesis(X, self.thetas)
                 loss = (H - y).T
                 loss_per_feature = np.dot(loss, X).T
                 self.thetas -= learning_rate * (1/m) * loss_per_feature
-                if verbose > 2 and i % 25 == 0:
+                if self.verbose > 2 and i % 25 == 0:
                     print('\n\tTETHAS [ iteration {} ]'.format(i))
                     print(' [ Gryffindor  Slytherin   Hufflepuff  Ravenclaw ]')
                     print('{}'.format(self.thetas))
                 if calculate_cost:
                     cost.append(self.cost(H, y, self.thetas))
-            if verbose > 1:
+            if self.verbose > 1:
                 print('\n\tFINAL TETHAS [ iteration {} ]'.format(i))
                 print(' [ Gryffindor  Slytherin   Hufflepuff  Ravenclaw ]')
                 print('{}'.format(self.thetas))
