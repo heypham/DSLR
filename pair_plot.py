@@ -77,7 +77,7 @@ def plot_plair_plot(X, y, features_names, nb_features, houses):
         plt.setp(axs[feature_1, 0], ylabel=name_feature_1)
         for feature_2 in range(feature_1, nb_features):
             plot_scatter_plot_or_histogram(axs, feature_1, feature_2, filter_data(X[feature_1], X[feature_2], y[0]), houses)
-    plt.suptitle('Pair plot')
+    plt.suptitle('What features are you going to use for your logistic regression?')
     plt.show()
 
 def main():

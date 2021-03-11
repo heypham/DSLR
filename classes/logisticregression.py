@@ -6,6 +6,7 @@ try:
     from classes.feature import Feature
     import matplotlib.pyplot as plt
     from sklearn.model_selection import train_test_split
+    import argparse
 except NameError as e:
     print(e)
     print('[Import error] Please run <pip install -r requirements.txt>')
