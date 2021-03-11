@@ -17,7 +17,8 @@ def parse_arguments():
         parser.add_argument('-lr', '--learning_rate', help='[default = 0.01]', type=float, default=0.01)
         parser.add_argument('-it', '--iterations', help='[default = 1000]', type=int, default=1000)
         parser.add_argument('-tr', '--training_percentage', help='percentage of the dataset to generate the train dataset [default = 0.8]', type=float, default=0.8)
-        parser.add_argument('-cst', '--cost', help='cost function', action='store_true')
+        parser.add_argument('-cst', '--cost', help='plot cost per iteration', action='store_true')
+        parser.add_argument('-ev', '--evaluate', help='display confusion matrix', action='store_true')
         args = parser.parse_args()
         return args
     except:
@@ -51,8 +52,8 @@ def main():
         save_model(model, args.verbose)
         if args.verbose > 0:
             print('\n[ Process completed ]\n')
-        # prediction = model.predict(X_test)
-        # model.validate(prediction, y_test)
+        if args.evaluate:
+            model.validate(model.predict(X_test), y_test)
     except NameError as e:
         print(e)
 

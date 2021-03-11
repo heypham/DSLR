@@ -165,9 +165,6 @@ class LogisticRegression(object):
             if not self.mean and not self.stdev:
                 features_describe = self.describe(self.features, X)
             for i in range(len(X)):
-                # if not self.mean and not self.stdev:
-                #     self.mean.append(features_describe[i].mean)
-                #     self.stdev.append(features_describe[i].std)
                 Xnorm.append((X[i] - self.mean[i]) / self.stdev[i])
             Xnorm = np.array(Xnorm)
             Xnorm = Xnorm.T
@@ -292,18 +289,54 @@ class LogisticRegression(object):
         """
         Compares X_test predictions with actual result
         """
-        try:
-            incorrect = 0
-            m = result.shape[0]
-            for i in range(m):
-                pos = np.argmax(y[i])
-                house = self.houses[pos]
-                if result[i] != house:
-                    incorrect += 1
-                    print('i = {} ||  predicted = {} || actual = {}'.format(i, result[i], house))
-            print("Test results : {}".format((m - incorrect)/m))
-        except:
-            raise NameError('[Process error] There has been an error while processing (validation function).')
+        # try:
+        incorrect = 0
+        m = result.shape[0]
+        print(m)
+        true_positive = np.zeros((4, 1))
+        false_negative = np.zeros((4, 1))
+        false_positive = np.zeros((4, 1))
+        for i in range(m):
+            pos = np.argmax(y[i])
+            house = self.houses[pos]
+            if result[i] == house:
+                true_positive[pos] += 1
+            else:
+                false_negative[pos] += 1
+                false_positive[self.houses.index(result[i])] += 1
+                print('i = {} ||  actual = {} || predicted = {} || pos = {}'.format(i, house, result[i], pos))
+        true_negative = (np.ones((4, 1)) * m) - (true_positive + false_negative)
+        sensitivity = true_positive / (true_positive + false_negative)
+        specificity = true_negative / (true_negative + false_positive)
+        precision = true_positive / (true_positive + false_positive)
+        accuracy = (true_positive + true_negative) / (true_positive + true_negative + false_positive + false_negative)
+        balanced_accuracy = (sensitivity + specificity) / 2
+        F1_score = (2 * precision * sensitivity) / (precision + sensitivity)
+        print(self.houses)
+        print('true_positive')
+        print(true_positive.T)
+        print('true_negative')
+        print(true_negative.T)
+        print('false_negative')
+        print(false_negative.T)
+        print('false_positive')
+        print(false_positive.T)
+
+        print('sensitivity')
+        print(sensitivity)
+        print('specificity')
+        print(specificity)
+        print('precision')
+        print(precision)
+        print('accuracy')
+        print(accuracy)
+        print('balanced_accuracy')
+        print(balanced_accuracy)
+        print('F1_score')
+        print(F1_score)
+            # print("Test results : {}".format((m - incorrect)/m))
+        # except:
+        #     raise NameError('[Process error] There has been an error while processing (validation function).')
 
     def plot_cost(self):
         print("EMILIE I LOVE U")
