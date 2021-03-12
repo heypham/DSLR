@@ -19,6 +19,7 @@ def parse_arguments():
         parser.add_argument('-tr', '--training_percentage', help='percentage of the dataset to generate the train dataset [default = 0.8]', type=float, default=0.8)
         parser.add_argument('-cst', '--cost', help='cost function', action='store_true')
         parser.add_argument('-f', '--choose_features', help='train logistic model with chosen features', action='store_true')
+        parser.add_argument('-ev', '--evaluate', help='display confusion matrix', action='store_true')
         args = parser.parse_args()
         return args
     except:
@@ -52,8 +53,8 @@ def main():
         save_model(model, args.verbose)
         if args.verbose > 0:
             print('\n[ Process completed ]\n')
-        # prediction = model.predict(X_test)
-        # model.validate(prediction, y_test)
+        if args.evaluate:
+            model.validate(model.predict(X_test), y_test)
     except NameError as e:
         print(e)
 

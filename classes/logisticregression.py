@@ -311,14 +311,14 @@ class LogisticRegression(object):
                 loss_per_feature = np.dot(loss, X).T
                 self.thetas -= learning_rate * (1/m) * loss_per_feature
                 if self.verbose > 2 and i % 25 == 0:
-                    print('\n\tTETHAS [ iteration {} ]'.format(i))
+                    print('\n\tTethas [ iteration {} ]'.format(i))
                     print(' [ Gryffindor  Slytherin   Hufflepuff  Ravenclaw ]')
                     print('{}'.format(self.thetas))
                 if calculate_cost:
                     cost_history.append(self.cost(H, y, self.thetas))
             if self.verbose > 1:
-                print('\n\tFINAL TETHAS [ iteration {} ]'.format(i))
-                print(' [ Gryffindor  Slytherin   Hufflepuff  Ravenclaw ]')
+                print('\n\tFinal Tethas [ iteration {} ]\n'.format(i))
+                print(' [ Gryffindor  Slytherin   Hufflepuff  Ravenclaw ]\n')
                 print('{}'.format(self.thetas))
             if calculate_cost:
                 self.cost_history = np.array(cost_history)
@@ -331,15 +331,71 @@ class LogisticRegression(object):
         Compares X_test predictions with actual result
         """
         try:
-            incorrect = 0
             m = result.shape[0]
+            true_positive = np.zeros((4, 1))
+            false_negative = np.zeros((4, 1))
+            false_positive = np.zeros((4, 1))
+            if self.verbose > 0:
+                print('\n[ Model evaluation ]\n')
+            if self.verbose > 1:
+                print('+-----------------------------------------------+')
+                print ('|\t\tPREDICTION ERRORS\t\t|')
+                print('+-----------------------+-----------------------+')
+                print('|\tReal House\t|\tPredicted\t|')
+                print('+-----------------------+-----------------------+')
             for i in range(m):
                 pos = np.argmax(y[i])
-                house = self.houses[pos]
-                if result[i] != house:
-                    incorrect += 1
-                    print('i = {} ||  predicted = {} || actual = {}'.format(i, result[i], house))
-            print("Test results : {}".format((m - incorrect)/m))
+                predicted_house = self.houses[pos]
+                if result[i] == predicted_house:
+                    true_positive[pos] += 1
+                else:
+                    false_negative[pos] += 1
+                    false_positive[self.houses.index(result[i])] += 1
+                    if self.verbose > 1:
+                        print('|\t{}\t|\t{}\t|'.format(predicted_house, result[i]))
+            if self.verbose > 1:
+                print ('+-----------------------+-----------------------+\n\n')
+            true_negative = (np.ones((4, 1)) * m) - (true_positive + false_negative)
+            sensitivity = true_positive / (true_positive + false_negative)
+            specificity = true_negative / (true_negative + false_positive)
+            precision = true_positive / (true_positive + false_positive)
+            accuracy = (true_positive + true_negative) / (true_positive + true_negative + false_positive + false_negative)
+            balanced_accuracy = (sensitivity + specificity) / 2
+            F1_score = (2 * precision * sensitivity) / (precision + sensitivity)
+            if self.verbose > 1:
+                print('                        +-----------------------+-----------------------+-----------------------+-----------------------+-----------------------+')
+                print('                        |\t{}\t|\t{}\t|\t{}\t|\t{}\t|\t{}\t\t|'.format(self.houses[0], self.houses[1], self.houses[2], self.houses[3], 'Mean'))
+                print('+-----------------------+-----------------------+-----------------------+-----------------------+-----------------------+-----------------------+')
+                print('|\t{}\t|\t{}\t\t|\t{}\t\t|\t{}\t\t|\t{}\t\t|\t{}\t\t|'.format('True Positive', true_positive[0][0], true_positive[1][0], true_positive[2][0], true_positive[3][0], np.mean(true_positive)))
+                print('+-----------------------+-----------------------+-----------------------+-----------------------+-----------------------+-----------------------+')
+                print('|\t{}\t|\t{}\t\t|\t{}\t\t|\t{}\t\t|\t{}\t\t|\t{}\t\t|'.format('True Negative', true_negative[0][0], true_negative[1][0], true_negative[2][0], true_negative[3][0], np.mean(true_negative)))
+                print('+-----------------------+-----------------------+-----------------------+-----------------------+-----------------------+-----------------------+')
+                print('|\t{}\t|\t{}\t\t|\t{}\t\t|\t{}\t\t|\t{}\t\t|\t{}\t\t|'.format('False Positive', false_positive[0][0], false_positive[1][0], false_positive[2][0], false_positive[3][0], np.mean(false_positive)))
+                print('+-----------------------+-----------------------+-----------------------+-----------------------+-----------------------+-----------------------+')
+                print('|\t{}\t|\t{}\t\t|\t{}\t\t|\t{}\t\t|\t{}\t\t|\t{}\t\t|'.format('False Negative', false_negative[0][0], false_negative[1][0], false_negative[2][0], false_negative[3][0], np.mean(false_negative)))
+                print('+-----------------------+-----------------------+-----------------------+-----------------------+-----------------------+-----------------------+\n\n')
+            print('                        +-----------------------+-----------------------+-----------------------+-----------------------+-----------------------+')
+            print('                        |\t{}\t|\t{}\t|\t{}\t|\t{}\t|\t{}\t\t|'.format(self.houses[0], self.houses[1], self.houses[2], self.houses[3], 'Mean'))
+            print('+-----------------------+-----------------------+-----------------------+-----------------------+-----------------------+-----------------------+')
+            print('|\t{}\t|\t{:.5f}\t\t|\t{:.5f}\t\t|\t{:.5f}\t\t|\t{:.5f}\t\t|\t{:.5f}\t\t|'.format('Sensitivity', sensitivity[0][0], sensitivity[1][0], sensitivity[2][0], sensitivity[3][0], np.mean(sensitivity)))
+            print('+-----------------------+-----------------------+-----------------------+-----------------------+-----------------------+-----------------------+')
+            print('|\t{}\t|\t{:.5f}\t\t|\t{:.5f}\t\t|\t{:.5f}\t\t|\t{:.5f}\t\t|\t{:.5f}\t\t|'.format('Specificity', specificity[0][0], specificity[1][0], specificity[2][0], specificity[3][0], np.mean(specificity)))
+            print('+-----------------------+-----------------------+-----------------------+-----------------------+-----------------------+-----------------------+')
+            print('|\t{}\t|\t{:.5f}\t\t|\t{:.5f}\t\t|\t{:.5f}\t\t|\t{:.5f}\t\t|\t{:.5f}\t\t|'.format('Precision', precision[0][0], precision[1][0], precision[2][0], precision[3][0], np.mean(precision)))
+            print('+-----------------------+-----------------------+-----------------------+-----------------------+-----------------------+-----------------------+')
+            print('|\t{}\t|\t{:.5f}\t\t|\t{:.5f}\t\t|\t{:.5f}\t\t|\t{:.5f}\t\t|\t{:.5f}\t\t|'.format('Accuracy', accuracy[0][0], accuracy[1][0], accuracy[2][0], accuracy[3][0], np.mean(accuracy)))
+            print('+-----------------------+-----------------------+-----------------------+-----------------------+-----------------------+-----------------------+')
+            print('|\t{}\t|\t{:.5f}\t\t|\t{:.5f}\t\t|\t{:.5f}\t\t|\t{:.5f}\t\t|\t{:.5f}\t\t|'.format('Balanced Acc.', balanced_accuracy[0][0], balanced_accuracy[1][0], balanced_accuracy[2][0], balanced_accuracy[3][0], np.mean(balanced_accuracy)))
+            print('+-----------------------+-----------------------+-----------------------+-----------------------+-----------------------+-----------------------+')
+            print('|\t{}\t|\t{:.5f}\t\t|\t{:.5f}\t\t|\t{:.5f}\t\t|\t{:.5f}\t\t|\t{:.5f}\t\t|'.format('F1 Score', F1_score[0][0], F1_score[1][0], F1_score[2][0], F1_score[3][0], np.mean(F1_score)))
+            print('+-----------------------+-----------------------+-----------------------+-----------------------+-----------------------+-----------------------+\n\n')
+            if self.verbose > 1:
+                print('Sensitivity       ->\tTP / ( TP + FN )')
+                print('Specficity        ->\tTN / ( TN + FP )')
+                print('Precision         ->\tTP / ( TP + FP )')
+                print('Accuracy          ->\t( TP + TN ) / ( TP + FN + FP + FN )')
+                print('Balanced Accuracy ->\t( Sensitivity + Specificity ) / 2')
+                print('F1 Score          ->\t( 2 * Precision * Sensitivity ) / ( Precision + Sensitivity )\n')
         except:
             raise NameError('[Process error] There has been an error while processing (validation function).')
 
