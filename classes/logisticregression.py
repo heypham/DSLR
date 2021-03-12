@@ -38,41 +38,10 @@ class LogisticRegression(object):
         self.dropped_features = []
         self.choose_features = None
 
-    def read_csv(self, datafile, choose_feature=False):
+    def _features_to_drop(self):
         """
-        Function to read csv file and split into training/testing sets
-        returns train/test sets for X and y + list of 4 houses
+        Function to match user input to correct features to train the model
         """
-        try:
-            if self.choose_features is None:
-                self.choose_features = choose_feature
-            f = pd.read_csv(datafile)
-            houses = f['Hogwarts House'].unique()
-            features = list(f.columns[6:])
-            self.features = np.array(features).T
-            features_to_drop = []
-            y = f['Hogwarts House']
-            unused_features = ['Index','Hogwarts House', 'First Name', 'Last Name', 'Birthday', 'Best Hand']
-            X = f.drop(unused_features,axis=1)
-            if self.choose_features is True:
-                self.dropped_features = self.features_to_drop()
-                if len(self.dropped_features) == 0:
-                    print("An error was detected in the chosen features. Will train model using all available features.")
-                else:
-                    X = X.drop(self.dropped_features, axis=1)
-                    if self.init_thetas == True:
-                        self.thetas = np.zeros((14 - len(self.dropped_features), 4))
-                        self.init_thetas = False
-            self.X = np.array(X).T
-            self.y = np.array([y])
-            if self.verbose > 0:
-                print('\n-->\tReading CSV file.')
-            return self.X, self.y, self.features
-        except NameError as e:
-            print(e)
-            raise NameError('[Read error] Wrong file format. Make sure you give an existing .csv file as argument.')
-
-    def features_to_drop(self):
         if len(self.dropped_features) > 0:
             return self.dropped_features
         else:
@@ -100,6 +69,53 @@ class LogisticRegression(object):
             else:
                 dropping_features = []
         return dropping_features
+
+    def _remove_empty_values(self, X):
+        """
+        To train the model, we remove all students who have missing grades
+        """
+        try:
+            x_filtered = []
+            for x in X:
+                if x == x:
+                    x_filtered.append(x)
+            return x_filtered
+        except:
+            raise NameError('[Process error] There has been an error while removing empty values.')
+
+    def read_csv(self, datafile, choose_feature=False):
+        """
+        Function to read csv file and split into training/testing sets
+        returns train/test sets for X and y + list of 4 houses
+        """
+        try:
+            if self.choose_features is None:
+                self.choose_features = choose_feature
+            f = pd.read_csv(datafile)
+            houses = f['Hogwarts House'].unique()
+            features = list(f.columns[6:])
+            self.features = np.array(features).T
+            features_to_drop = []
+            y = f['Hogwarts House']
+            unused_features = ['Index','Hogwarts House', 'First Name', 'Last Name', 'Birthday', 'Best Hand']
+            X = f.drop(unused_features,axis=1)
+            if self.choose_features is True:
+                self.dropped_features = self._features_to_drop()
+                if len(self.dropped_features) == 0:
+                    print("An error was detected in the chosen features. Will train model using all available features.")
+                else:
+                    X = X.drop(self.dropped_features, axis=1)
+                    if self.init_thetas == True:
+                        self.thetas = np.zeros((14 - len(self.dropped_features), 4))
+                        self.init_thetas = False
+            self.X = np.array(X).T
+            self.y = np.array([y])
+            if self.verbose > 0:
+                print('\n-->\tReading CSV file.')
+            return self.X, self.y, self.features
+        except NameError as e:
+            print(e)
+            raise NameError('[Read error] Wrong file format. Make sure you give an existing .csv file as argument.')
 
     def set_verbose(self, verbose):
         if verbose:
@@ -166,16 +182,6 @@ class LogisticRegression(object):
             print(e)
             raise NameError('[Process error] The dataset cannot be filled.')
 
-    def remove_empty_values(self, X):
-        try:
-            x_filtered = []
-            for x in X:
-                if x == x:
-                    x_filtered.append(x)
-            return x_filtered
-        except:
-            raise NameError('[Process error] There has been an error while removing empty values.')
-
     def describe(self, feature_names, X):
         """
         returns a Feature object list with each
@@ -185,7 +191,7 @@ class LogisticRegression(object):
             i = 0
             features = []
             for x in X:
-                feature = Feature(feature_names[i], self.remove_empty_values(x))
+                feature = Feature(feature_names[i], self._remove_empty_values(x))
                 features.append(feature)
                 self.mean.append(feature.mean)
                 self.stdev.append(feature.std)
@@ -211,8 +217,7 @@ class LogisticRegression(object):
             if self.verbose > 0:
                 print('\n-->\tNormalising dataset.')
             return Xnorm
-        except NameError as e:
-            print(e)
+        except:
             raise NameError('[Process error] There has been an error while processing (feature scaling/normalising).')
 
     def one_hot_encoding(self, y):
