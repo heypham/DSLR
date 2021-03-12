@@ -22,9 +22,9 @@ def display(features):
     information = ['name', 'count', 'mean', 'std', 'min', 'q_25', 'q_50', 'q_75', 'max']
     print
     for info in information:
-        to_print = '{:<7s}'.format(info)
+        to_print = '{:<6s}'.format(info)
         if info == 'name':
-            to_print = ' ' * 7
+            to_print = ' ' * 6
         for feature in features:
             to_print += feature.get(info)
         print(to_print)
@@ -38,11 +38,6 @@ def main():
         X, y, features_names = model.read_csv(args.datafile)
         features = model.describe(features_names, X)
         display(features)
-
-        # Real describe function as reference
-        # f = pd.read_csv(args.datafile)
-        # sum = f.describe()
-        # print(sum)
     except NameError as e:
         print(e)
 

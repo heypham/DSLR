@@ -32,16 +32,15 @@ class Feature:
     
     def __return_info(self, info_to_return):
         info_to_return_formatted = ' {:>13.6f} '.format(info_to_return)
-        magic_number_of_spaces = len(self.name) - 13 if len(self.name) > 13 else 0
+        magic_number_of_spaces = 0
         info = '|'
         info += ' ' * magic_number_of_spaces
         info += info_to_return_formatted
-        info += '|'
         return info
 
     def get(self, info):
         if info == 'name':
-            info = '| {:>13s} |'.format(self.name)
+            info = '| {:>13.13s} '.format(self.name)
             return info
         if info == 'count':
             return self.__return_info(self.count)
