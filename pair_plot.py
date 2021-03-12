@@ -80,7 +80,7 @@ def plot_scatter_plot_or_histogram(axs, feature_1, feature_2, data, houses):
             axs[feature_2, feature_1].scatter(X1_per_house, X2_per_house, alpha=0.07, marker='.')
 
 def plot_plair_plot(X, y, features_names, nb_features, houses):
-    fig, axs = plt.subplots(nb_features, nb_features)
+    fig, axs = plt.subplots(nb_features, nb_features, figsize=(16,10))
     for feature_1 in range(nb_features):
         name_feature_1 = get_title(features_names[feature_1])
         axs[0, feature_1].set_title(name_feature_1)
