@@ -6,7 +6,6 @@ try:
     from classes.feature import Feature
     import matplotlib.pyplot as plt
     from sklearn.model_selection import train_test_split
-    import argparse
 except NameError as e:
     print(e)
     print('[Import error] Please run <pip install -r requirements.txt>')
@@ -35,15 +34,6 @@ class LogisticRegression(object):
         self.stdev = []
         self.thetas = np.zeros((14, 4))
         self.cost_history = []
-
-    def parse_arg(self):
-        try:
-            parser = argparse.ArgumentParser(prog='describe', usage='%(prog)s [-h] datafile.csv', description='Program describing the dataset given.')
-            parser.add_argument('datafile', help='the .csv file containing the dataset')
-            args = parser.parse_args()
-            return args
-        except:
-            raise NameError('[Parse error] There has been an error while parsing the arguments.')
 
     def read_csv(self, datafile):
         """

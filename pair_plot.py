@@ -4,9 +4,19 @@ try:
     import pandas as pd
     import numpy as np
     import matplotlib.pyplot as plt
+    import argparse
 except:
     print('[Import error] Please run <pip install -r requirements.txt>')
     exit()
+
+def parse_arg():
+    try:
+        parser = argparse.ArgumentParser(prog='pair_plot', usage='%(prog)s [-h] datafile.csv', description='Program showing relation between features.')
+        parser.add_argument('datafile', help='the .csv file containing the dataset')
+        args = parser.parse_args()
+        return args
+    except:
+        raise NameError('[Parse error] There has been an error while parsing the arguments.')
 
 def filter_data(X1, X2, y):
     try:
@@ -83,7 +93,7 @@ def plot_plair_plot(X, y, features_names, nb_features, houses):
 def main():
     try:
         model = LogisticRegression()
-        args = model.parse_arg()
+        args = parse_arg()
         X, y, features_names = model.read_csv(args.datafile)
         plot_plair_plot(X, y, features_names, len(features_names), model.houses)
     except NameError as e:

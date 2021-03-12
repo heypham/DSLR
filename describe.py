@@ -2,10 +2,20 @@
 try:
     from classes.logisticregression import LogisticRegression
     from classes.feature import Feature
+    import argparse
 except NameError as e:
     print(e)
     print('[Import error] Please run <pip install -r requirements.txt>')
     exit()
+
+def parse_arg():
+    try:
+        parser = argparse.ArgumentParser(prog='describe', usage='%(prog)s [-h] datafile.csv', description='Program describing the dataset given.')
+        parser.add_argument('datafile', help='the .csv file containing the dataset')
+        args = parser.parse_args()
+        return args
+    except:
+        raise NameError('[Parse error] There has been an error while parsing the arguments.')
 
 def display(features):
     i = 0
@@ -24,7 +34,7 @@ def display(features):
 def main():
     try:
         model = LogisticRegression()
-        args = model.parse_arg()
+        args = parse_arg()
         X, y, features_names = model.read_csv(args.datafile)
         features = model.describe(features_names, X)
         display(features)

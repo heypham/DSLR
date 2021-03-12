@@ -2,3 +2,5 @@
 venv
 houses.csv
 logreg_model.42
+datasets/dataset_truth.csv
+datasets/evaluate.py
