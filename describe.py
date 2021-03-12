@@ -35,7 +35,7 @@ def main():
     try:
         model = LogisticRegression()
         args = parse_arg()
-        X, y, features_names = model.read_csv(args.datafile)
+        X, y = model.read_csv(args)
         features = model.describe(features_names, X)
         display(features)
 

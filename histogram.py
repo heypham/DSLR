@@ -72,7 +72,7 @@ def main():
     try:
         model = LogisticRegression()
         args = parse_arg()
-        X, y, features_names = model.read_csv(args.datafile)
+        X, y = model.read_csv(args)
         feature_to_plot = find_most_homogeneus_feature(X, y)
         data = clasify_data_per_house(X[feature_to_plot], y[0])
         name = features_names[feature_to_plot]

@@ -26,7 +26,7 @@ def main():
         saved_model.close()
 
         args = parse_arguments()
-        X, y, features = model.read_csv(args.datafile)
+        X, y = model.read_csv(args)
         X_filled = model.fill_data(X, model.mean)
         X_norm = model.feature_scale_normalise(X_filled)
         

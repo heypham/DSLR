@@ -35,25 +35,63 @@ class LogisticRegression(object):
         self.thetas = np.zeros((14, 4))
         self.cost_history = []
 
-    def read_csv(self, datafile):
+    def read_csv(self, args):
         """
         Function to read csv file and split into training/testing sets
         returns train/test sets for X and y + list of 4 houses
         """
         try:
+            datafile = args.datafile
+            choose_features = args.choose_features
             f = pd.read_csv(datafile)
             houses = f['Hogwarts House'].unique()
             features = list(f.columns[6:])
+            self.features = np.array(features).T
+            features_to_drop = []
             y = f['Hogwarts House']
-            X = f.drop(['Index','Hogwarts House', 'First Name', 'Last Name', 'Birthday', 'Best Hand'],axis=1)
+            unused_features = ['Index','Hogwarts House', 'First Name', 'Last Name', 'Birthday', 'Best Hand']
+            X = f.drop(unused_features,axis=1)
+            if choose_features is True:
+                features_to_drop = self.features_to_drop()
+                if len(features_to_drop) == 0:
+                    print("An error was detected in the chosen features. Will train model using all available features.")
+                else:
+                    X = X.drop(features_to_drop, axis=1)
+                    self.thetas = np.zeros((14 - len(features_to_drop), 1))
+            print(X.shape)
+            print(self.thetas.shape)
             self.X = np.array(X).T
             self.y = np.array([y])
-            self.features = np.array(features).T
             if self.verbose > 0:
                 print('\n-->\tReading CSV file.')
-            return self.X, self.y, self.features
-        except:
+            return self.X, self.y
+        except NameError as e:
+            print(e)
             raise NameError('[Read error] Wrong file format. Make sure you give an existing .csv file as argument.')
+
+    def features_to_drop(self):
+        print("Here is the list of features.\n")
+        for i in range(len(self.features)):
+            print("{}. {}".format(i+1, self.features[i]))
+        print("\nPlease enter the feature numbers you want to use to train the model (separated by space).")
+        print("Example : 1 6 4\n")
+        training_features = input()
+        training_features = training_features.split(' ')
+        error = 0
+        for i in range(len(training_features)):
+            try:
+                training_features[i] = self.features[int(training_features[i]) - 1]
+            except:
+                error = 1
+        if error == 0:
+            dropping_features = list(self.features)
+            for chosen_feature in training_features:
+                for feature in dropping_features:
+                    if feature == chosen_feature:
+                        dropping_features.remove(feature)
+        else:
+            dropping_features = []
+        return dropping_features
 
     def set_verbose(self, verbose):
         if verbose:
@@ -157,9 +195,6 @@ class LogisticRegression(object):
             if not self.mean and not self.stdev:
                 features_describe = self.describe(self.features, X)
             for i in range(len(X)):
-                # if not self.mean and not self.stdev:
-                #     self.mean.append(features_describe[i].mean)
-                #     self.stdev.append(features_describe[i].std)
                 Xnorm.append((X[i] - self.mean[i]) / self.stdev[i])
             Xnorm = np.array(Xnorm)
             Xnorm = Xnorm.T
@@ -263,6 +298,7 @@ class LogisticRegression(object):
             for i in range(iter):
                 H = self.hypothesis(X, self.thetas)
                 loss = (H - y).T
+                print(loss.shape)
                 loss_per_feature = np.dot(loss, X).T
                 self.thetas -= learning_rate * (1/m) * loss_per_feature
                 if self.verbose > 2 and i % 25 == 0:
@@ -277,7 +313,8 @@ class LogisticRegression(object):
                 print('{}'.format(self.thetas))
             if calculate_cost:
                 self.cost_history = np.array(cost_history)
-        except:
+        except NameError as e:
+            print(e)
             raise NameError('[Process error] There has been an error while processing (Fit function).')
 
     def validate(self, result, y):

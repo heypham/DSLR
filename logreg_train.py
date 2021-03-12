@@ -18,6 +18,7 @@ def parse_arguments():
         parser.add_argument('-it', '--iterations', help='[default = 1000]', type=int, default=1000)
         parser.add_argument('-tr', '--training_percentage', help='percentage of the dataset to generate the train dataset [default = 0.8]', type=float, default=0.8)
         parser.add_argument('-cst', '--cost', help='cost function', action='store_true')
+        parser.add_argument('-f', '--choose_features', help='train logistic model with chosen features', action='store_true')
         args = parser.parse_args()
         return args
     except:
@@ -40,7 +41,7 @@ def main():
         model.set_verbose(args.verbose)
         if args.verbose > 0:
             print('\n[ Process information ]')
-        X, y, features = model.read_csv(args.datafile)
+        X, y = model.read_csv(args)
         X_clean, y_clean = model.clean_data(X.T, y)
         X_norm = model.feature_scale_normalise(X_clean)
         y_encoded = model.one_hot_encoding(y_clean)
