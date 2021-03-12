@@ -41,7 +41,7 @@ def main():
         model.set_verbose(args.verbose)
         if args.verbose > 0:
             print('\n[ Process information ]')
-        X, y = model.read_csv(args)
+        X, y, features_names = model.read_csv(args.datafile, args.choose_features)
         X_clean, y_clean = model.clean_data(X.T, y)
         X_norm = model.feature_scale_normalise(X_clean)
         y_encoded = model.one_hot_encoding(y_clean)

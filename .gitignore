@@ -1,4 +1,5 @@
 **/*.pyc
+.vscode/
 venv
 houses.csv
 logreg_model.42

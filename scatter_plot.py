@@ -114,7 +114,7 @@ def main():
     try:
         model = LogisticRegression()
         args = parse_arg()
-        X, y = model.read_csv(args)
+        X, y, features_names = model.read_csv(args.datafile)
         feature_to_plot_1, feature_to_plot_2, pearson_coef = find_most_correlated_features(X, y[0])
         data = filter_data(X[feature_to_plot_1], X[feature_to_plot_2], y[0])
         plot_scatter_plot(model.houses, model.colors, data, pearson_coef, features_names[feature_to_plot_1], features_names[feature_to_plot_2])
