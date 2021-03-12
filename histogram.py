@@ -3,9 +3,19 @@
 try:
     from classes.logisticregression import LogisticRegression
     import matplotlib.pyplot as plt
+    import argparse
 except:
     print('[Import error] Please run <pip install -r requirements.txt>')
     exit()
+
+def parse_arg():
+    try:
+        parser = argparse.ArgumentParser(prog='histogram', usage='%(prog)s [-h] datafile.csv', description='Program showing which course has a homogeneous score distribution between all four houses.')
+        parser.add_argument('datafile', help='the .csv file containing the dataset')
+        args = parser.parse_args()
+        return args
+    except:
+        raise NameError('[Parse error] There has been an error while parsing the arguments.')
 
 def clasify_data_per_house(X, y):
     i = 0
@@ -61,12 +71,13 @@ def find_most_homogeneus_feature(X, y):
 def main():
     try:
         model = LogisticRegression()
-        args = model.parse_arg()
+        args = parse_arg()
         X, y, features_names = model.read_csv(args.datafile)
         feature_to_plot = find_most_homogeneus_feature(X, y)
         data = clasify_data_per_house(X[feature_to_plot], y[0])
         name = features_names[feature_to_plot]
         bins = 15
+        plt.suptitle("Which course has a homogeneous score distribution between all four houses?")
         plt.title(name)
         plt.hist(data[0], bins, alpha=0.5, histtype='step', linewidth=2, label='Gry')
         plt.hist(data[1], bins, alpha=0.5, histtype='step', linewidth=2, label='Sly')

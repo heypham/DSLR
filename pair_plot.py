@@ -4,9 +4,19 @@ try:
     import pandas as pd
     import numpy as np
     import matplotlib.pyplot as plt
+    import argparse
 except:
     print('[Import error] Please run <pip install -r requirements.txt>')
     exit()
+
+def parse_arg():
+    try:
+        parser = argparse.ArgumentParser(prog='pair_plot', usage='%(prog)s [-h] datafile.csv', description='Program showing relation between features.')
+        parser.add_argument('datafile', help='the .csv file containing the dataset')
+        args = parser.parse_args()
+        return args
+    except:
+        raise NameError('[Parse error] There has been an error while parsing the arguments.')
 
 def filter_data(X1, X2, y):
     try:
@@ -77,13 +87,13 @@ def plot_plair_plot(X, y, features_names, nb_features, houses):
         plt.setp(axs[feature_1, 0], ylabel=name_feature_1)
         for feature_2 in range(feature_1, nb_features):
             plot_scatter_plot_or_histogram(axs, feature_1, feature_2, filter_data(X[feature_1], X[feature_2], y[0]), houses)
-    plt.suptitle('Pair plot')
+    plt.suptitle('What features are you going to use for your logistic regression?')
     plt.show()
 
 def main():
     try:
         model = LogisticRegression()
-        args = model.parse_arg()
+        args = parse_arg()
         X, y, features_names = model.read_csv(args.datafile)
         plot_plair_plot(X, y, features_names, len(features_names), model.houses)
     except NameError as e:

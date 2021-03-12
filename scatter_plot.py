@@ -9,6 +9,15 @@ except:
     print('[Import error] Please run <pip install -r requirements.txt>')
     exit()
 
+def parse_arg():
+    try:
+        parser = argparse.ArgumentParser(prog='scatter_plot', usage='%(prog)s [-h] datafile.csv', description='Program two similar features.')
+        parser.add_argument('datafile', help='the .csv file containing the dataset')
+        args = parser.parse_args()
+        return args
+    except:
+        raise NameError('[Parse error] There has been an error while parsing the arguments.')
+
 def filter_data(X1, X2, y):
     try:
         i = 0
@@ -91,7 +100,7 @@ def find_most_correlated_features(X, y):
         return 0, 0, 'error'
 
 def plot_scatter_plot(houses, colors, data, pearson_coef, name_feature_1, name_feature_2):
-    plt.suptitle('Scatter plot')
+    plt.suptitle('What are the two features that are similar?')
     plt.title('Pearson\'s Coef: {:.3f}'.format(pearson_coef))
     for house in houses:
         [X1, X2] = clasify_data_per_house(data, house)
@@ -104,7 +113,7 @@ def plot_scatter_plot(houses, colors, data, pearson_coef, name_feature_1, name_f
 def main():
     try:
         model = LogisticRegression()
-        args = model.parse_arg()
+        args = parse_arg()
         X, y, features_names = model.read_csv(args.datafile)
         feature_to_plot_1, feature_to_plot_2, pearson_coef = find_most_correlated_features(X, y[0])
         data = filter_data(X[feature_to_plot_1], X[feature_to_plot_2], y[0])
