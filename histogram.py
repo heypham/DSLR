@@ -67,6 +67,7 @@ def main():
         data = clasify_data_per_house(X[feature_to_plot], y[0])
         name = features_names[feature_to_plot]
         bins = 15
+        plt.suptitle("Which course has a homogeneous score distribution between all four houses?")
         plt.title(name)
         plt.hist(data[0], bins, alpha=0.5, histtype='step', linewidth=2, label='Gry')
         plt.hist(data[1], bins, alpha=0.5, histtype='step', linewidth=2, label='Sly')

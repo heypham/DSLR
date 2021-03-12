@@ -91,7 +91,7 @@ def find_most_correlated_features(X, y):
         return 0, 0, 'error'
 
 def plot_scatter_plot(houses, colors, data, pearson_coef, name_feature_1, name_feature_2):
-    plt.suptitle('Scatter plot')
+    plt.suptitle('What are the two features that are similar?')
     plt.title('Pearson\'s Coef: {:.3f}'.format(pearson_coef))
     for house in houses:
         [X1, X2] = clasify_data_per_house(data, house)
