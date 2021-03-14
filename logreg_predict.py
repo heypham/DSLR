@@ -19,9 +19,16 @@ def parse_arguments():
     except:
         raise NameError('\n[Input error]\nThere has been an error while parsing the arguments.\n')
 
+def open_model(name):
+    try:
+        saved_model = open(name, "rb")
+        return saved_model
+    except:
+        raise NameError('\n[Input error]\nThe model file cannot be found.\n')
+
 def main():
     try:
-        saved_model = open("logreg_model.42", "rb")
+        saved_model = open_model("logreg_model.42")
         model = pickle.load(saved_model)
         saved_model.close()
 
