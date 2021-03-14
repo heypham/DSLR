@@ -31,16 +31,15 @@ class Feature:
         return result_min + result_max
     
     def __return_info(self, info_to_return):
-        info_to_return_formatted = ' {:>13.6f} '.format(info_to_return)
+        info_to_return_formatted = ' {:>12.5f} '.format(info_to_return)
         magic_number_of_spaces = 0
-        info = '|'
-        info += ' ' * magic_number_of_spaces
+        info = ' ' * magic_number_of_spaces
         info += info_to_return_formatted
         return info
 
     def get(self, info):
         if info == 'name':
-            info = '| {:>13.13s} '.format(self.name)
+            info = ' {:>12.12s} '.format(self.name)
             return info
         if info == 'count':
             return self.__return_info(self.count)
