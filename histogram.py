@@ -84,12 +84,12 @@ def main():
         model = LogisticRegression()
         args = parse_arg()
         X, y, features_names = model.read_csv(args.datafile)
-        if (args.all)
-            for i in features_name.len():
+        if args.all:
+            for i in range(len(features_names)):
                 data = clasify_data_per_house(X[i], y[0])
                 name = features_names[i]
                 plot(data, name)
-        else
+        else:
             feature_to_plot = find_most_homogeneus_feature(X, y)
             data = clasify_data_per_house(X[feature_to_plot], y[0])
             name = features_names[feature_to_plot]
