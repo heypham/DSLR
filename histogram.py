@@ -1,5 +1,4 @@
 #/usr/bin/python3
-#/usr/bin/python3
 try:
     from classes.logisticregression import LogisticRegression
     import matplotlib.pyplot as plt
@@ -12,6 +11,7 @@ def parse_arg():
     try:
         parser = argparse.ArgumentParser(prog='histogram', usage='%(prog)s [-h] datafile.csv', description='Program showing which course has a homogeneous score distribution between all four houses.')
         parser.add_argument('datafile', help='the .csv file containing the dataset')
+        parser.add_argument('-a', '--all', help='plot all the features', action='store_true')
         args = parser.parse_args()
         return args
     except:
@@ -68,14 +68,7 @@ def find_most_homogeneus_feature(X, y):
         i += 1
     return final_i
 
-def main():
-    try:
-        model = LogisticRegression()
-        args = parse_arg()
-        X, y, features_names = model.read_csv(args.datafile)
-        feature_to_plot = find_most_homogeneus_feature(X, y)
-        data = clasify_data_per_house(X[feature_to_plot], y[0])
-        name = features_names[feature_to_plot]
+def plot(data, name):
         bins = 15
         plt.suptitle("Which course has a homogeneous score distribution between all four houses?")
         plt.title(name)
@@ -85,6 +78,22 @@ def main():
         plt.hist(data[3], bins, alpha=0.5, histtype='step', linewidth=2, label='Rav')
         plt.legend()
         plt.show()
+
+def main():
+    try:
+        model = LogisticRegression()
+        args = parse_arg()
+        X, y, features_names = model.read_csv(args.datafile)
+        if (args.all)
+            for i in features_name.len():
+                data = clasify_data_per_house(X[i], y[0])
+                name = features_names[i]
+                plot(data, name)
+        else
+            feature_to_plot = find_most_homogeneus_feature(X, y)
+            data = clasify_data_per_house(X[feature_to_plot], y[0])
+            name = features_names[feature_to_plot]
+            plot(data, name)
     except NameError as e:
         print(e)
 
