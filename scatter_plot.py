@@ -13,6 +13,7 @@ def parse_arg():
     try:
         parser = argparse.ArgumentParser(prog='scatter_plot', usage='%(prog)s [-h] datafile.csv', description='Program two similar features.')
         parser.add_argument('datafile', help='the .csv file containing the dataset')
+        parser.add_argument('-a', '--all', help='plot all the features', action='store_true')
         args = parser.parse_args()
         return args
     except:
@@ -86,8 +87,8 @@ def find_most_correlated_features(X, y):
         final_feature_1 = 0
         final_feature_2 = 0
         final_pearson_coef = 0
-        for feature_1 in range(13):
-            for feature_2 in range(feature_1 + 1, 13):
+        for feature_1 in range(len(features_names)):
+            for feature_2 in range(feature_1 + 1, len(features_names)):
                 pearson_coef = calc_pearson_coef(X[feature_1], X[feature_2], y)
                 if final_pearson_coef < pearson_coef:
                     final_feature_1 = feature_1
@@ -115,9 +116,15 @@ def main():
         model = LogisticRegression()
         args = parse_arg()
         X, y, features_names = model.read_csv(args.datafile)
-        feature_to_plot_1, feature_to_plot_2, pearson_coef = find_most_correlated_features(X, y[0])
-        data = filter_data(X[feature_to_plot_1], X[feature_to_plot_2], y[0])
-        plot_scatter_plot(model.houses, model.colors, data, pearson_coef, features_names[feature_to_plot_1], features_names[feature_to_plot_2])
+        if args.all:
+            for feature_to_plot_1 in range(len(features_names)):
+                for feature_to_plot_2 in range(feature_to_plot_1 + 1, len(features_names)):
+                    data = filter_data(X[feature_to_plot_1], X[feature_to_plot_2], y[0])
+                    plot_scatter_plot(model.houses, model.colors, data, pearson_coef, features_names[feature_to_plot_1], features_names[feature_to_plot_2])
+        else:
+            feature_to_plot_1, feature_to_plot_2, pearson_coef = find_most_correlated_features(X, y[0])
+            data = filter_data(X[feature_to_plot_1], X[feature_to_plot_2], y[0])
+            plot_scatter_plot(model.houses, model.colors, data, pearson_coef, features_names[feature_to_plot_1], features_names[feature_to_plot_2])
     except NameError as e:
         print(e)
 
