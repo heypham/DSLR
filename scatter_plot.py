@@ -87,8 +87,8 @@ def find_most_correlated_features(X, y):
         final_feature_1 = 0
         final_feature_2 = 0
         final_pearson_coef = 0
-        for feature_1 in range(len(features_names)):
-            for feature_2 in range(feature_1 + 1, len(features_names)):
+        for feature_1 in range(X.shape[0]):
+            for feature_2 in range(feature_1 + 1, X.shape[0]):
                 pearson_coef = calc_pearson_coef(X[feature_1], X[feature_2], y)
                 if final_pearson_coef < pearson_coef:
                     final_feature_1 = feature_1
@@ -119,6 +119,7 @@ def main():
         if args.all:
             for feature_to_plot_1 in range(len(features_names)):
                 for feature_to_plot_2 in range(feature_to_plot_1 + 1, len(features_names)):
+                    pearson_coef = calc_pearson_coef(X[feature_to_plot_1], X[feature_to_plot_2], y[0])
                     data = filter_data(X[feature_to_plot_1], X[feature_to_plot_2], y[0])
                     plot_scatter_plot(model.houses, model.colors, data, pearson_coef, features_names[feature_to_plot_1], features_names[feature_to_plot_2])
         else:
