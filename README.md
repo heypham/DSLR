@@ -24,7 +24,7 @@ _Mandatory argument:_ Dataset file
 ### 3. Data Visualization
 #### 3.1. Histogram
 
-Run `python describe.py [optional] datasets/dataset_train.csv`
+Run `python describe.py datasets/dataset_train.csv`
 
 _Mandatory argument:_ Dataset file  
 
@@ -35,7 +35,7 @@ _Optional arguments:_
 
 #### 3.2. Scatter plot
 
-Run `python scatter_plot.py [optional] datasets/dataset_train.csv`
+Run `python scatter_plot.py datasets/dataset_train.csv`
 
 _Mandatory argument:_ Dataset file  
 
@@ -57,7 +57,7 @@ _Mandatory argument:_
 
 #### 4.1. Train model  
 
-Run `python logreg_train.py [optional] datasets/dataset_train.csv`
+Run `python logreg_train.py datasets/dataset_train.csv`
 
 _Mandatory argument:_ Dataset file  
 
