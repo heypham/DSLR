@@ -9,7 +9,7 @@ except:
 
 def parse_arg():
     try:
-        parser = argparse.ArgumentParser(prog='histogram', usage='%(prog)s [-h] datafile.csv', description='Program showing which course has a homogeneous score distribution between all four houses.')
+        parser = argparse.ArgumentParser(prog='histogram', usage='%(prog)s [-h][-a] datafile.csv', description='Program showing which course has a homogeneous score distribution between all four houses.')
         parser.add_argument('datafile', help='the .csv file containing the dataset')
         parser.add_argument('-a', '--all', help='plot all the features', action='store_true')
         args = parser.parse_args()

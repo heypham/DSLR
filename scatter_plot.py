@@ -11,7 +11,7 @@ except:
 
 def parse_arg():
     try:
-        parser = argparse.ArgumentParser(prog='scatter_plot', usage='%(prog)s [-h] datafile.csv', description='Program two similar features.')
+        parser = argparse.ArgumentParser(prog='scatter_plot', usage='%(prog)s [-h][-a] datafile.csv', description='Program two similar features.')
         parser.add_argument('datafile', help='the .csv file containing the dataset')
         parser.add_argument('-a', '--all', help='plot all the features', action='store_true')
         args = parser.parse_args()
